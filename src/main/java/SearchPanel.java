@@ -25,3 +25,4 @@ public class SearchPanel extends JPanel {
         add(secondSearchPanel);
     }
 }
+
