@@ -1,4 +1,5 @@
 import javax.swing.*;
+import java.awt.*;
 
 public class ResultsPanel extends JPanel {
 
@@ -9,17 +10,15 @@ public class ResultsPanel extends JPanel {
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 
         movieList = new JList<>();
-        add(new JLabel("Search Results"));
-        add(new JScrollPane(movieList));
 
-        movieList.addListSelectionListener(e -> {
-            if (!e.getValueIsAdjusting()) {
-                Movie m = movieList.getSelectedValue();
-                if (m != null) {
-                    new MovieDetailsWindow(m.title, m.year, m.imdbID, m.type, m.poster);
-                }
-            }
-        });
+        movieList.setCellRenderer(new MovieCellRenderer());
+
+        add(new JLabel("Search Results"));
+
+        JScrollPane scrollPane = new JScrollPane(movieList);
+        scrollPane.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+        add(scrollPane);
+
 
         resultsBackButton = new JButton("Back");
         add(resultsBackButton);

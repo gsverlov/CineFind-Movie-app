@@ -1,5 +1,6 @@
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionListener;
 import org.json.JSONObject;
 import org.json.JSONArray;
 import javax.swing.WindowConstants;
@@ -20,11 +21,14 @@ public class Main {
             frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 
             JPanel cardPanel = new JPanel(new CardLayout());
+            DefaultListModel<Object> sharedFavoritesModel = new DefaultListModel<>();
 
             // Panels
             SearchPanel searchPanel = new SearchPanel();
             ResultsPanel resultsPanel = new ResultsPanel();
-            FavoritesPanel favoritesPanel = new FavoritesPanel();
+
+            FavoritesPanel favoritesPanel = new FavoritesPanel(sharedFavoritesModel);
+
             AdvancedPanel advancedPanel = new AdvancedPanel();
 
             cardPanel.add(searchPanel, CARD_SEARCH);
@@ -37,52 +41,81 @@ public class Main {
 
             CardLayout cl = (CardLayout) (cardPanel.getLayout());
 
-
-            searchPanel.searchField.addActionListener(e -> {
-                String txt = searchPanel.searchField.getText().trim();
-                if(txt.equals("")) {
-                    JOptionPane.showMessageDialog(frame,"Type something man!");
-                    return;
-                }
-
-                try {
-                    OMDbApiClient c = new OMDbApiClient("51f8a124");
-                    String j = c.searchMovies(txt);
-
-                    JSONObject obj = new JSONObject(j);
-                    if(!obj.getBoolean("Response")) {
-                        JOptionPane.showMessageDialog(frame,"No results found");
-                        return;
+            // --- Handle click on Search Result List ---
+            resultsPanel.movieList.addListSelectionListener(e -> {
+                if (!e.getValueIsAdjusting()) {
+                    Movie selected = resultsPanel.movieList.getSelectedValue();
+                    if (selected != null) {
+                        // 1. Add to history
+                        searchPanel.addToHistory(selected);
+                        new MovieDetailsWindow(selected, sharedFavoritesModel);
                     }
-
-                    JSONArray a = obj.getJSONArray("Search");
-                    Movie[] ms = new Movie[a.length()];
-
-                    for(int i=0;i<a.length();i++){
-                        JSONObject m = a.getJSONObject(i);
-                        ms[i] = new Movie(
-                                m.getString("Title"),
-                                m.getString("Year"),
-                                m.getString("imdbID"),
-                                m.getString("Type"),
-                                m.getString("Poster")
-                        );
-                    }
-
-                    resultsPanel.movieList.setListData(ms);
-                    cl.show(cardPanel,CARD_RESULTS);
-
-                } catch(Exception ex){
-                    JOptionPane.showMessageDialog(frame,"Oops, something broke");
                 }
             });
 
-            resultsPanel.resultsBackButton.addActionListener(e -> cl.show(cardPanel,CARD_SEARCH));
-            favoritesPanel.favoritesBackButton.addActionListener(e -> cl.show(cardPanel,CARD_SEARCH));
-            advancedPanel.advancedBackButton.addActionListener(e -> cl.show(cardPanel,CARD_SEARCH));
+            // --- Handle Search Box actions (Enter key or Dropdown selection) ---
+            ActionListener searchAction = e -> {
+                Object item = searchPanel.searchBox.getSelectedItem();
 
-            searchPanel.favoriteButton.addActionListener(e -> cl.show(cardPanel,CARD_FAVORITES));
-            searchPanel.advancedButton.addActionListener(e -> cl.show(cardPanel,CARD_ADVANCED));
+                if (item == null) return;
+
+                // Case A: User selected a history item (Movie object)
+                if (item instanceof Movie) {
+                    Movie historyMovie = (Movie) item;
+
+                    // --- 修正 4: 這裡也要更新為新的建構子 ---
+                    new MovieDetailsWindow(historyMovie, sharedFavoritesModel);
+                }
+                // Case B: User typed text and pressed Enter (String)
+                else {
+                    String searchText = item.toString().trim();
+                    if(searchText.equals("")) {
+                        JOptionPane.showMessageDialog(frame, "Type something man!");
+                        return;
+                    }
+
+                    try {
+                        OMDbApiClient c = new OMDbApiClient("51f8a124");
+                        String j = c.searchMovies(searchText);
+
+                        JSONObject obj = new JSONObject(j);
+                        if(!obj.getBoolean("Response")) {
+                            JOptionPane.showMessageDialog(frame, "No results found");
+                            return;
+                        }
+
+                        JSONArray a = obj.getJSONArray("Search");
+                        Movie[] ms = new Movie[a.length()];
+
+                        for(int i=0; i<a.length(); i++){
+                            JSONObject m = a.getJSONObject(i);
+                            ms[i] = new Movie(
+                                    m.getString("Title"),
+                                    m.getString("Year"),
+                                    m.getString("imdbID"),
+                                    m.getString("Type"),
+                                    m.getString("Poster")
+                            );
+                        }
+
+                        resultsPanel.movieList.setListData(ms);
+                        cl.show(cardPanel, CARD_RESULTS);
+
+                    } catch(Exception ex){
+                        ex.printStackTrace();
+                        JOptionPane.showMessageDialog(frame, "Error: " + ex.getMessage());
+                    }
+                }
+            };
+
+            searchPanel.searchBox.addActionListener(searchAction);
+
+            // --- Navigation Buttons ---
+            resultsPanel.resultsBackButton.addActionListener(e -> cl.show(cardPanel, CARD_SEARCH));
+            favoritesPanel.favoritesBackButton.addActionListener(e -> cl.show(cardPanel, CARD_SEARCH));
+            advancedPanel.advancedBackButton.addActionListener(e -> cl.show(cardPanel, CARD_SEARCH));
+            searchPanel.favoriteButton.addActionListener(e -> cl.show(cardPanel, CARD_FAVORITES));
+            searchPanel.advancedButton.addActionListener(e -> cl.show(cardPanel, CARD_ADVANCED));
 
             frame.pack();
         });
