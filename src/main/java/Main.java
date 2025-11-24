@@ -2,6 +2,7 @@ import javax.swing.*;
 import java.awt.*;
 import org.json.JSONObject;
 import org.json.JSONArray;
+import javax.swing.WindowConstants;
 
 public class Main {
 
@@ -16,7 +17,7 @@ public class Main {
 
             JFrame frame = new JFrame("Movie Finder");
             frame.setMinimumSize(new java.awt.Dimension(300, 200));
-            frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+            frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 
             JPanel cardPanel = new JPanel(new CardLayout());
 
