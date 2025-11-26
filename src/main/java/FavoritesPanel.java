@@ -26,7 +26,9 @@ public class FavoritesPanel extends JPanel {
             if (!e.getValueIsAdjusting()) {
                 Movie m = (Movie) favoritesList.getSelectedValue();
                 if (m != null) {
-                    new MovieDetailsWindow(m, model);
+                    ViewMovieDetailsInteractor interactor =
+                            new ViewMovieDetailsInteractor(new OMDbApiClient("51f8a124"));
+                    new MovieDetailsWindow(m, model, interactor);
                 }
                 favoritesList.clearSelection();
             }

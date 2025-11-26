@@ -48,7 +48,9 @@ public class Main {
                     if (selected != null) {
                         // 1. Add to history
                         searchPanel.addToHistory(selected);
-                        new MovieDetailsWindow(selected, sharedFavoritesModel);
+                        ViewMovieDetailsInteractor interactor =
+                                new ViewMovieDetailsInteractor(new OMDbApiClient("51f8a124"));
+                        new MovieDetailsWindow(selected, sharedFavoritesModel, interactor);
                     }
                 }
             });
@@ -64,7 +66,9 @@ public class Main {
                     Movie historyMovie = (Movie) item;
 
                     // --- 修正 4: 這裡也要更新為新的建構子 ---
-                    new MovieDetailsWindow(historyMovie, sharedFavoritesModel);
+                    ViewMovieDetailsInteractor interactor =
+                            new ViewMovieDetailsInteractor(new OMDbApiClient("51f8a124"));
+                    new MovieDetailsWindow(historyMovie, sharedFavoritesModel, interactor);
                 }
                 // Case B: User typed text and pressed Enter (String)
                 else {

@@ -8,10 +8,14 @@ public class MovieDetailsWindow extends JFrame {
     private Movie movie;
     private DefaultListModel<Object> favoritesModel;
     private JButton heartButton;
+    private ViewMovieDetailsInteractor interactor;
 
-    public MovieDetailsWindow(Movie movie, DefaultListModel<Object> favoritesModel) {
+    public MovieDetailsWindow(Movie movie,
+                              DefaultListModel<Object> favoritesModel,
+                              ViewMovieDetailsInteractor interactor) {
         this.movie = movie;
         this.favoritesModel = favoritesModel;
+        this.interactor = interactor;
 
         setTitle(movie.title);
         setSize(500, 700);
@@ -136,28 +140,37 @@ public class MovieDetailsWindow extends JFrame {
     private void fetchDetailedInfo(JLabel plotLabel, JLabel infoLabel) {
         new Thread(() -> {
             try {
-                OMDbApiClient client = new OMDbApiClient("51f8a124");
-                JSONObject json = client.getMovieDetails(movie.imdbID);
+                Movie detailed = interactor.getMovieDetails(movie.imdbID);
 
-                if (json != null) {
-                    movie.plot = json.optString("Plot", "N/A");
-                    movie.director = json.optString("Director", "N/A");
-                    movie.genre = json.optString("Genre", "N/A");
-                    movie.rating = json.optString("imdbRating", "N/A");
-                    movie.runtime = json.optString("Runtime", "N/A");
+                SwingUtilities.invokeLater(() -> {
+                    if (detailed == null) {
+                        plotLabel.setText("Failed to load details.");
+                        return;
+                    }
 
-                    SwingUtilities.invokeLater(() -> {
-                        plotLabel.setText("<html><p style='width: 350px'>" + movie.plot + "</p></html>");
+                    // update your local movie instance if you want to preserve it elsewhere
+                    movie.plot = detailed.plot;
+                    movie.director = detailed.director;
+                    movie.genre = detailed.genre;
+                    movie.runtime = detailed.runtime;
+                    movie.rating = detailed.rating;
+                    movie.poster = detailed.poster;
+                    movie.year = detailed.year; // optional if it may be updated
 
-                        infoLabel.setText("<html><b>Year:</b> " + movie.year +
-                                "<br><b>Genre:</b> " + movie.genre +
-                                "<br><b>Director:</b> " + movie.director +
-                                "<br><b>Runtime:</b> " + movie.runtime +
-                                "<br><b>Rating:</b> ⭐ " + movie.rating + "</html>");
-                    });
-                }
+                    // update UI
+                    plotLabel.setText("<html><p style='width: 350px'>" + movie.plot + "</p></html>");
+
+                    infoLabel.setText("<html><b>Year:</b> " + movie.year +
+                            "<br><b>Genre:</b> " + movie.genre +
+                            "<br><b>Director:</b> " + movie.director +
+                            "<br><b>Runtime:</b> " + movie.runtime +
+                            "<br><b>Rating:</b> ⭐ " + movie.rating + "</html>");
+                });
+
             } catch (Exception e) {
-                SwingUtilities.invokeLater(() -> plotLabel.setText("Failed to load details."));
+                SwingUtilities.invokeLater(() ->
+                        plotLabel.setText("Failed to load details.")
+                );
             }
         }).start();
     }
