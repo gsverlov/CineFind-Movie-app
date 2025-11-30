@@ -39,7 +39,7 @@ public class Main {
 
             searchPanel.searchField.addActionListener(e -> {
                 String txt = searchPanel.searchField.getText().trim();
-                if(txt.equals("")) {
+                if(txt.isEmpty()) {
                     JOptionPane.showMessageDialog(frame,"Type something man!");
                     return;
                 }
