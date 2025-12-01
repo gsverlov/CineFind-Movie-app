@@ -31,6 +31,8 @@ public class Main {
 
             AdvancedPanel advancedPanel = new AdvancedPanel();
 
+
+
             cardPanel.add(searchPanel, CARD_SEARCH);
             cardPanel.add(favoritesPanel, CARD_FAVORITES);
             cardPanel.add(advancedPanel, CARD_ADVANCED);
@@ -122,6 +124,19 @@ public class Main {
             searchPanel.advancedButton.addActionListener(e -> cl.show(cardPanel, CARD_ADVANCED));
 
             frame.pack();
+
+
+            AdvancedSearchController advancedSearchController =
+                    new AdvancedSearchController(advancedPanel, resultsPanel, new AppController() {
+                        @Override
+                        public void show(String name) {
+                            if (name.equals(AppController.RESULTS)) {
+                                cl.show(cardPanel, CARD_RESULTS);
+                            }
+                        }
+                    });
+
+
         });
     }
 }

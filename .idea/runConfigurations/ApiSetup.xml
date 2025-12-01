@@ -1,0 +1,16 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="ApiSetup" type="Application" factoryName="Application">
+    <envs>
+      <env name="NOMIC_API_KEY" value="nk-z8OzW3Ioqd0Dn5H7LVDJnKbjJyNbmQM6qAqk2V9E9yM" />
+      <env name="OMBD_API_KEY" value="51f8a124" />
+      <env name="PINECONE_API_KEY" value="pcsk_5vsf8B_H917p1RyUr8o5jhFQx26214xjhf4ZaSgBY5tKxRqcYSGbqydxR6XuovkpsUR7AF" />
+      <env name="SERPAPI_KEY" value="1e1a21d46ace2cda3876eb94b4d017fb53f5a9e2bae10d5b7292b75650872da6" />
+      <env name="ZYTE_API_KEY" value="86bea890953d4d31b2cd45737ff0b03f" />
+    </envs>
+    <option name="MAIN_CLASS_NAME" value="Main" />
+    <module name="TeamProject" />
+    <method v="2">
+      <option name="Make" enabled="true" />
+    </method>
+  </configuration>
+</component>
