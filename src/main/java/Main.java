@@ -51,6 +51,20 @@ public class Main {
 
             CardLayout cl = (CardLayout) (cardPanel.getLayout());
 
+            // --- Handle click on Search Result List ---
+            resultsPanel.movieList.addListSelectionListener(e -> {
+                if (!e.getValueIsAdjusting()) {
+                    Movie selected = resultsPanel.movieList.getSelectedValue();
+                    if (selected != null) {
+                        // 1. Add to history
+                        searchPanel.addToHistory(selected);
+                        ViewMovieDetailsInteractor interactor =
+                                new ViewMovieDetailsInteractor(new OMDbApiClient(System.getenv("OMBD_API_KEY")));
+                        new MovieDetailsWindow(selected, interactor, loginManager);
+                    }
+                }
+            });
+
             // --- Handle Search Box actions (Enter key or Dropdown selection) ---
             ActionListener searchAction = e -> {
                 Object item = searchPanel.searchBox.getSelectedItem();
@@ -63,8 +77,8 @@ public class Main {
 
                     // --- 修正 4: 這裡也要更新為新的建構子 ---
                     ViewMovieDetailsInteractor interactor =
-                            new ViewMovieDetailsInteractor(new OMDbApiClient("51f8a124"));
-                    new MovieDetailsWindow(historyMovie, interactor);
+                            new ViewMovieDetailsInteractor(new OMDbApiClient(System.getenv("OMBD_API_KEY")));
+                    new MovieDetailsWindow(historyMovie, interactor, loginManager);
                 }
                 // Case B: User typed text and pressed Enter (String)
                 else {
@@ -75,7 +89,7 @@ public class Main {
                     }
 
                     try {
-                        OMDbApiClient c = new OMDbApiClient("51f8a124");
+                        OMDbApiClient c = new OMDbApiClient(System.getenv("OMBD_API_KEY"));
                         String j = c.searchMovies(searchText);
 
                         JSONObject obj = new JSONObject(j);
@@ -124,17 +138,6 @@ public class Main {
             searchPanel.signupButton.addActionListener(e-> cl.show(cardPanel,CARD_SIGNUP));
 
             frame.pack();
-
-
-            AdvancedSearchController advancedSearchController =
-                    new AdvancedSearchController(advancedPanel, resultsPanel, new AppController() {
-                        @Override
-                        public void show(String name) {
-                            if (name.equals(AppController.RESULTS)) {
-                                cl.show(cardPanel, CARD_RESULTS);
-                            }
-                        }
-                    });
 
 
         });

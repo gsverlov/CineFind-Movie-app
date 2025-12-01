@@ -8,7 +8,6 @@ public class FavoritesPanel extends JPanel {
     private final LoginManager loginManager;
     private final JList<Movie> favoritesList;
     public final JButton favoritesBackButton;
-    public JButton unfavoriteButton;
 
     public FavoritesPanel(LoginManager loginManager) {
 
@@ -25,8 +24,6 @@ public class FavoritesPanel extends JPanel {
 
         favoritesBackButton = new JButton("Back");
         add(favoritesBackButton);
-        unfavoriteButton = new JButton("Unfavorite");
-        add(unfavoriteButton);
 
         favoritesList.setCellRenderer(new MovieCellRenderer());
 
@@ -38,27 +35,11 @@ public class FavoritesPanel extends JPanel {
                 if (m != null) {
                     ViewMovieDetailsInteractor interactor =
                             new ViewMovieDetailsInteractor(new OMDbApiClient("51f8a124"));
-                    new MovieDetailsWindow(m, interactor);
+                    new MovieDetailsWindow(m, interactor, loginManager);
                 }
                 favoritesList.clearSelection();
             }
         });
-
-        unfavoriteButton.addActionListener(e -> {
-            User user = loginManager.getLoggedInUser();
-            if(user == null){
-                JOptionPane.showMessageDialog(null, "You must be logged in.");
-                return;
-            }
-            Movie selected = favoritesList.getSelectedValue();
-            if (selected == null) {
-                JOptionPane.showMessageDialog(null, "Please select a movie first.");
-                return;
-            }
-            user.unfavoriteMovie(selected);
-            JOptionPane.showMessageDialog(null, "Removed to favorites!");
-
-            });
     }
 
     public List<Movie> getFavorites() {
