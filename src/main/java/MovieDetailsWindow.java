@@ -11,9 +11,8 @@ public class MovieDetailsWindow extends JFrame {
     private ViewMovieDetailsInteractor interactor;
 
     public MovieDetailsWindow(Movie movie,
-                              ViewMovieDetailsInteractor interactor) {
+                              ViewMovieDetailsInteractor interactor, LoginManager loginManager) {
         this.movie = movie;
-        this.favoritesModel = favoritesModel;
         this.interactor = interactor;
 
         setTitle(movie.title);
@@ -39,9 +38,9 @@ public class MovieDetailsWindow extends JFrame {
         heartButton.setContentAreaFilled(false);
         heartButton.setCursor(new Cursor(Cursor.HAND_CURSOR));
 
-        updateHeartState();
+        updateHeartState(loginManager);
 
-        heartButton.addActionListener(e -> toggleFavorite());
+        heartButton.addActionListener(e -> toggleFavorite(loginManager));
 
         headerPanel.add(titleLabel, BorderLayout.CENTER);
         headerPanel.add(heartButton, BorderLayout.EAST);
@@ -81,40 +80,42 @@ public class MovieDetailsWindow extends JFrame {
         setVisible(true);
     }
 
-    private void updateHeartState() {
-        boolean isFav = false;
-
-        for (int i = 0; i < favoritesModel.size(); i++) {
-            Movie m = (Movie) favoritesModel.get(i);
-            if (m.imdbID.equals(movie.imdbID)) {
-                isFav = true;
-                break;
-            }
+    private void updateHeartState(LoginManager loginManager) {
+        User user = loginManager.getLoggedInUser();
+        boolean isFav = user.getFavorites().contains(movie);
+        if (!isFav) {
+            heartButton.setText(isFav ? "❤" : "♡"); // 實心 vs 空心
+            heartButton.setForeground(isFav ? Color.RED : Color.BLACK);
         }
-        heartButton.setText(isFav ? "❤" : "♡"); // 實心 vs 空心
-        heartButton.setForeground(isFav ? Color.RED : Color.BLACK);
+        else {
+            heartButton.setText(isFav ? "♡":"❤" ); // 實心 vs 空心
+            heartButton.setForeground(isFav ? Color.BLACK: Color.RED);
+
+        }
+
     }
 
-    private void toggleFavorite() {
-        boolean exists = false;
-        Movie existingMovie = null;
-
-        for (int i = 0; i < favoritesModel.size(); i++) {
-            Movie m = (Movie) favoritesModel.get(i);
-            if (m.imdbID.equals(movie.imdbID)) {
-                exists = true;
-                existingMovie = m;
-                break;
+    private void toggleFavorite(LoginManager loginManager) {
+        User user = loginManager.getLoggedInUser();
+        boolean isFav = user.getFavorites().contains(movie);
+        if(user == null){
+            JOptionPane.showMessageDialog(null, "You must be logged in.");
+            return;
+        }
+        if(!isFav) {
+            try {
+                user.favoriteMovie(movie);
+                JOptionPane.showMessageDialog(null, "Added to favorites!");
+            } catch (MovieAlreadyFavoritedException ex) {
+                JOptionPane.showMessageDialog(null, ex.getMessage());
             }
         }
 
-        if (exists) {
-            favoritesModel.removeElement(existingMovie); // 移除
-        } else {
-            favoritesModel.add(0, movie); // 加入
+        else {
+            user.unfavoriteMovie(movie);
+            JOptionPane.showMessageDialog(null, "Removed from favorites!");
         }
-
-        updateHeartState();
+        updateHeartState(loginManager);
     }
 
     private void loadPoster(String urlString, JLabel label) {
