@@ -3,6 +3,7 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import org.json.JSONObject;
 
 public class OMDbApiClient {
 
@@ -17,9 +18,20 @@ public class OMDbApiClient {
         if (name==null || name.trim().equals("")) {
             throw new IllegalArgumentException("Empty search not allowed");
         }
-
         String url = BASE_URL + "?apikey=" + apiKey + "&s=" + name.replace(" ", "+");
+        return sendRequest(url);
+    }
 
+    public JSONObject getMovieDetails(String imdbID) throws IOException, InterruptedException {
+        if (imdbID==null || imdbID.trim().equals("")) {
+            return null;
+        }
+        String url = BASE_URL + "?apikey=" + apiKey + "&i=" + imdbID;
+        String response = sendRequest(url);
+        return new JSONObject(response);
+    }
+
+    private String sendRequest(String url) throws IOException, InterruptedException {
         HttpClient client = HttpClient.newHttpClient();
         HttpRequest req = HttpRequest.newBuilder()
                 .uri(URI.create(url))
@@ -31,7 +43,6 @@ public class OMDbApiClient {
         if(resp.statusCode() != 200) {
             throw new IOException("HTTP Error " + resp.statusCode());
         }
-
         return resp.body();
     }
 }
