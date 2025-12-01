@@ -2,8 +2,10 @@ import javax.swing.*;
 import java.awt.*;
 
 public class AppController {
-    private CardLayout layout;
-    private JPanel container;
+    private final CardLayout layout;
+    private final JPanel container;
+
+    private final LoginManager loginManager;
 
     public static final String SEARCH = "SEARCH";
     public static final String RESULTS = "RESULTS";
@@ -13,6 +15,10 @@ public class AppController {
     public AppController() {
         layout = new CardLayout();
         container = new JPanel(layout);
+
+        loginManager = new LoginManager();
+
+        FavoritesPanel favoritesPanel = new FavoritesPanel(loginManager);
     }
 
     public JPanel getContainer() {
@@ -26,4 +32,6 @@ public class AppController {
     public void show(String name) {
         layout.show(container, name);
     }
+
 }
+

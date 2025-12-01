@@ -9,9 +9,18 @@ public class SearchPanel extends JPanel {
     public JComboBox<Object> searchBox;
     public JButton favoriteButton;
     public JButton advancedButton;
+    public JButton loginButton;
+    public JButton signupButton;
 
     public SearchPanel() {
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
+
+        //upper Login and Signup buttons
+        JPanel topButtonPanel = new JPanel();
+        loginButton = new JButton("Login");
+        signupButton = new JButton("Signup");
+        topButtonPanel.add(loginButton);
+        topButtonPanel.add(signupButton);
 
         // Focus Fix
         setFocusable(true);
@@ -80,6 +89,7 @@ public class SearchPanel extends JPanel {
 
         // Add components
         add(Box.createVerticalStrut(50));
+        add(topButtonPanel);
         add(firstSearchPanel);
         add(secondSearchPanel);
         add(Box.createVerticalStrut(100));

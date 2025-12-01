@@ -1,5 +1,7 @@
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Map;
+import java.util.List;
 
 public class User {
     /* Represents an individual user for the program.
@@ -19,23 +21,55 @@ public class User {
     private String username;
     private String password;
     private ArrayList<Movie> favorites;
-    private static Map<String, String> userPassowrdMap;
+    private static Map<String, String> userPassowrdMap = new HashMap<>();
+    private static Map<String, User> userMap = new HashMap<>();
 
-    public User(String username, String password){
+    public User(String username, String password) throws UsernameTakenException{
         if (userPassowrdMap.containsKey(username)) {
-
+            throw new UsernameTakenException();
         }
-        userPassowrdMap.put(username, password);
+
         this.username = username;
         this.password = password;
         this.favorites = new ArrayList<>();
+        userMap.put(username, this);
+        userPassowrdMap.put(username, password);
     }
 
-    public boolean check_login(String password){
-        return userPassowrdMap.get(this.username) == password;
+    public String getUsername(){
+        return this.username;
     }
 
-    public void favoriteMovie(Movie movie){
-        this.favorites.add(movie);
+    public static Map<String, String> getUserPasswordMap(){
+        return userPassowrdMap;
+    }
+
+    public static boolean checkValidUser(String username) throws UserNotFoundException{
+        if ( userMap == null || userMap.isEmpty()){
+            throw new UserNotFoundException();
+        }
+        return userMap.containsKey(username);
+    }
+
+    public static User getUser(String username){
+        return userMap.get(username);
+    }
+
+    public void favoriteMovie(Movie movie) throws MovieAlreadyFavoritedException{
+        if(this.favorites.contains(movie)){
+            throw new MovieAlreadyFavoritedException();
+        }
+        else{
+            this.favorites.add(movie);
+        }
+
+    }
+
+    public void unfavoriteMovie(Movie movie){
+        this.favorites.remove(movie);
+    }
+
+    public List<Movie> getFavorites(){
+        return new ArrayList<>(this.favorites);
     }
 }
