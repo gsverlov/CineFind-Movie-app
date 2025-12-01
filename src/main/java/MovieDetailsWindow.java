@@ -11,7 +11,6 @@ public class MovieDetailsWindow extends JFrame {
     private ViewMovieDetailsInteractor interactor;
 
     public MovieDetailsWindow(Movie movie,
-                              DefaultListModel<Object> favoritesModel,
                               ViewMovieDetailsInteractor interactor) {
         this.movie = movie;
         this.favoritesModel = favoritesModel;

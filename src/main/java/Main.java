@@ -8,11 +8,14 @@ import javax.swing.WindowConstants;
 public class Main {
 
     public static void main(String[] args) {
+        LoginManager loginManager = new LoginManager();
 
         final String CARD_SEARCH = "SEARCH";
         final String CARD_RESULTS = "RESULTS";
         final String CARD_FAVORITES = "FAVORITES";
         final String CARD_ADVANCED = "ADVANCED";
+        final String CARD_LOGIN = "LOGIN";
+        final String CARD_SIGNUP = "SIGNUP";
 
         SwingUtilities.invokeLater(() -> {
 
@@ -21,13 +24,15 @@ public class Main {
             frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 
             JPanel cardPanel = new JPanel(new CardLayout());
-            DefaultListModel<Object> sharedFavoritesModel = new DefaultListModel<>();
 
             // Panels
-            SearchPanel searchPanel = new SearchPanel();
-            ResultsPanel resultsPanel = new ResultsPanel();
+            LoginPanel loginPanel = new LoginPanel(loginManager);
+            SignupPanel signupPanel = new SignupPanel(loginManager);
 
-            FavoritesPanel favoritesPanel = new FavoritesPanel(sharedFavoritesModel);
+            SearchPanel searchPanel = new SearchPanel();
+            ResultsPanel resultsPanel = new ResultsPanel(loginManager);
+
+            FavoritesPanel favoritesPanel = new FavoritesPanel(loginManager);
 
             AdvancedPanel advancedPanel = new AdvancedPanel();
 
@@ -37,25 +42,14 @@ public class Main {
             cardPanel.add(favoritesPanel, CARD_FAVORITES);
             cardPanel.add(advancedPanel, CARD_ADVANCED);
             cardPanel.add(resultsPanel, CARD_RESULTS);
+            cardPanel.add(loginPanel, CARD_LOGIN);
+            cardPanel.add(signupPanel, CARD_SIGNUP);
+
 
             frame.setContentPane(cardPanel);
             frame.setVisible(true);
 
             CardLayout cl = (CardLayout) (cardPanel.getLayout());
-
-            // --- Handle click on Search Result List ---
-            resultsPanel.movieList.addListSelectionListener(e -> {
-                if (!e.getValueIsAdjusting()) {
-                    Movie selected = resultsPanel.movieList.getSelectedValue();
-                    if (selected != null) {
-                        // 1. Add to history
-                        searchPanel.addToHistory(selected);
-                        ViewMovieDetailsInteractor interactor =
-                                new ViewMovieDetailsInteractor(new OMDbApiClient("51f8a124"));
-                        new MovieDetailsWindow(selected, sharedFavoritesModel, interactor);
-                    }
-                }
-            });
 
             // --- Handle Search Box actions (Enter key or Dropdown selection) ---
             ActionListener searchAction = e -> {
@@ -70,7 +64,7 @@ public class Main {
                     // --- 修正 4: 這裡也要更新為新的建構子 ---
                     ViewMovieDetailsInteractor interactor =
                             new ViewMovieDetailsInteractor(new OMDbApiClient("51f8a124"));
-                    new MovieDetailsWindow(historyMovie, sharedFavoritesModel, interactor);
+                    new MovieDetailsWindow(historyMovie, interactor);
                 }
                 // Case B: User typed text and pressed Enter (String)
                 else {
@@ -103,7 +97,6 @@ public class Main {
                                     m.getString("Poster")
                             );
                         }
-
                         resultsPanel.movieList.setListData(ms);
                         cl.show(cardPanel, CARD_RESULTS);
 
@@ -117,11 +110,18 @@ public class Main {
             searchPanel.searchBox.addActionListener(searchAction);
 
             // --- Navigation Buttons ---
+            loginPanel.backButton.addActionListener(e -> cl.show(cardPanel, CARD_SEARCH));
+            signupPanel.backButton.addActionListener(e -> cl.show(cardPanel, CARD_SEARCH));
             resultsPanel.resultsBackButton.addActionListener(e -> cl.show(cardPanel, CARD_SEARCH));
             favoritesPanel.favoritesBackButton.addActionListener(e -> cl.show(cardPanel, CARD_SEARCH));
             advancedPanel.advancedBackButton.addActionListener(e -> cl.show(cardPanel, CARD_SEARCH));
-            searchPanel.favoriteButton.addActionListener(e -> cl.show(cardPanel, CARD_FAVORITES));
+            searchPanel.favoriteButton.addActionListener(e ->{
+                favoritesPanel.loadFavoritesIntoList();
+                cl.show(cardPanel, CARD_FAVORITES);
+            });
             searchPanel.advancedButton.addActionListener(e -> cl.show(cardPanel, CARD_ADVANCED));
+            searchPanel.loginButton.addActionListener(e-> cl.show(cardPanel,CARD_LOGIN));
+            searchPanel.signupButton.addActionListener(e-> cl.show(cardPanel,CARD_SIGNUP));
 
             frame.pack();
 
