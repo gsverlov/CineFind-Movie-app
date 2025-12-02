@@ -23,7 +23,7 @@ public class SerpApiClient {
      * @return The first result URL, or null if no results
      */
     public String searchFirstUrl(String query) throws Exception {
-        String encodedQuery = URLEncoder.encode(query, StandardCharsets.UTF_8.toString());
+        String encodedQuery = URLEncoder.encode(query, StandardCharsets.UTF_8);
         String urlString = BASE_URL + "?q=" + encodedQuery + "&api_key=" + apiKey;
 
         URL url = new URL(urlString);

@@ -100,6 +100,32 @@ public class ZyteApiClient {
      */
     private String extractTextFromHtml(String html) {
         // Remove script tags and their content
+        String[] lines = getStrings(html);
+        StringBuilder cleanedText = new StringBuilder();
+
+        for (String line : lines) {
+            line = line.trim();
+
+            // Skip very short lines (likely navigation/UI elements)
+            if (line.length() < 20) {
+                continue;
+            }
+
+            // Check if line has reasonable letter density
+            long letterCount = line.chars().filter(Character::isLetter).count();
+            long totalCount = line.length();
+
+            // If at least 60% letters/spaces, it's probably real content
+            if (letterCount > totalCount * 0.6) {
+                cleanedText.append(line).append(" ");
+            }
+        }
+
+        // Final cleanup: remove extra spaces
+        return cleanedText.toString().trim().replaceAll("\\s+", " ");
+    }
+
+    private static String[] getStrings(String html) {
         String text = html.replaceAll("(?is)<script[^>]*>.*?</script>", " ");
 
         // Remove style tags and their content
@@ -125,27 +151,6 @@ public class ZyteApiClient {
 
         // Split into lines by newline for filtering
         String[] lines = text.split("\\n");
-        StringBuilder cleanedText = new StringBuilder();
-
-        for (String line : lines) {
-            line = line.trim();
-
-            // Skip very short lines (likely navigation/UI elements)
-            if (line.length() < 20) {
-                continue;
-            }
-
-            // Check if line has reasonable letter density
-            long letterCount = line.chars().filter(Character::isLetter).count();
-            long totalCount = line.length();
-
-            // If at least 60% letters/spaces, it's probably real content
-            if (letterCount > totalCount * 0.6) {
-                cleanedText.append(line).append(" ");
-            }
-        }
-
-        // Final cleanup: remove extra spaces
-        return cleanedText.toString().trim().replaceAll("\\s+", " ");
+        return lines;
     }
 }

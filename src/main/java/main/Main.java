@@ -153,6 +153,16 @@ public class Main {
 
             frame.pack();
 
+            AdvancedSearchController advancedSearchController =
+                    new AdvancedSearchController(advancedPanel, resultsPanel, new AppController() {
+                        @Override
+                        public void show(String name) {
+                            if (name.equals(AppController.RESULTS)) {
+                                cl.show(cardPanel, CARD_RESULTS);
+                            }
+                        }
+                    });
+
 
         });
     }

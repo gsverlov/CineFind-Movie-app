@@ -22,7 +22,7 @@ public class AdvancedPanel extends JPanel {
         // Mood input
         JPanel moodPanel = new JPanel();
         moodPanel.setLayout(new BoxLayout(moodPanel, BoxLayout.X_AXIS));
-        moodPanel.add(new JLabel("Your Mood:"));
+        moodPanel.add(new JLabel("Any Keywords:"));
         moodPanel.add(Box.createHorizontalStrut(10));
         moodText = new JTextField(20);
         moodText.setMaximumSize(moodText.getPreferredSize());
