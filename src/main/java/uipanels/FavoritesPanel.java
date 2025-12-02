@@ -42,10 +42,8 @@ public class FavoritesPanel extends JPanel {
                     ViewMovieDetailsInteractor interactor =
                             new ViewMovieDetailsInteractor(new OMDbApiClient(ApiConfig.OMDB_API_KEY));
 
-                    // [MODIFIED] 傳入 this::loadFavoritesIntoList 作為回調函數
-                    // 這就是 "Instant Update" 的關鍵！
                     new MovieDetailsWindow(m, interactor, loginManager, () -> {
-                        loadFavoritesIntoList(); // 當狀態改變時，立即重載列表
+                        loadFavoritesIntoList();
                     });
                 }
                 favoritesList.clearSelection();
@@ -72,7 +70,7 @@ public class FavoritesPanel extends JPanel {
         }
         favoritesList.setModel(model);
 
-        // 強制刷新 UI，確保視覺上立即反應
+        // force refresh UI so it appears updated
         favoritesList.revalidate();
         favoritesList.repaint();
     }
