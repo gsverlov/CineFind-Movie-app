@@ -2,7 +2,11 @@ package main;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionListener;
+import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
+import DataPersistence.ExtractData;
 import apiservices.OMDbApiClient;
 import controllers.LoginManager;
 import controllers.ViewMovieDetailsInteractor;
@@ -22,6 +26,14 @@ import javax.swing.WindowConstants;
 public class Main {
 
     public static void main(String[] args) {
+        Path jsonFile = Paths.get("data/users.json");
+
+        try {
+            ExtractData.loadFromJson(jsonFile);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
         LoginManager loginManager = new LoginManager();
 
         final String CARD_SEARCH = "SEARCH";
@@ -41,7 +53,7 @@ public class Main {
 
             // Panels
             LoginPanel loginPanel = new LoginPanel(loginManager);
-            SignupPanel signupPanel = new SignupPanel(loginManager);
+            SignupPanel signupPanel = new SignupPanel();
 
             SearchPanel searchPanel = new SearchPanel();
             ResultsPanel resultsPanel = new ResultsPanel(loginManager);
@@ -151,7 +163,53 @@ public class Main {
             searchPanel.loginButton.addActionListener(e-> cl.show(cardPanel,CARD_LOGIN));
             searchPanel.signupButton.addActionListener(e-> cl.show(cardPanel,CARD_SIGNUP));
 
+            signupPanel.signUpButton.addActionListener(e ->{
+                String username = signupPanel.usernameBox.getText();
+                String password = signupPanel.passwordBox.getText();
+                loginManager.createAccount(username, password);
+
+                try {
+                    loginManager.login(username, password);
+                    User user = loginManager.getLoggedInUser();
+                    String msg = "You are now Logged in as ";
+                    JOptionPane.showMessageDialog(null, msg + user.getUsername());
+                } catch (UserNotFoundException | WrongPasswordException ex) {
+                    return;
+                }
+
+                cl.show(cardPanel,CARD_SEARCH);
+
+            });
+
+            loginPanel.loginButton.addActionListener(e -> {
+                String username = loginPanel.usernameBox.getText();
+                String password = loginPanel.passwordBox.getText();
+
+                try {
+                    loginManager.login(username, password);
+                    User user = loginManager.getLoggedInUser();
+                    String msg = "You are now Logged in as ";
+                    JOptionPane.showMessageDialog(null, msg + user.getUsername());
+                } catch (UserNotFoundException | WrongPasswordException ex) {
+                    return;
+                }
+                cl.show(cardPanel,CARD_SEARCH);
+
+            });
+
+
             frame.pack();
+
+            frame.addWindowListener(new java.awt.event.WindowAdapter() {
+                @Override
+                public void windowClosing(java.awt.event.WindowEvent e) {
+                    try {
+                        ExtractData.saveToJson(jsonFile);
+                    } catch (IOException ex) {
+                        throw new RuntimeException(ex);
+                    }
+                }
+            });
 
             AdvancedSearchController advancedSearchController =
                     new AdvancedSearchController(advancedPanel, resultsPanel, new AppController() {

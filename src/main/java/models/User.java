@@ -4,10 +4,15 @@ import exceptions.MovieAlreadyFavoritedException;
 import exceptions.UserNotFoundException;
 import exceptions.UsernameTakenException;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.List;
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 public class User {
     /* Represents an individual user for the program.
@@ -19,19 +24,24 @@ public class User {
         Rating
 
     provides methods that returns user specific things such as ratings given and favorited movies.
+     * Saves all users + their passwords + favorites to a JSON file.
+     *
+     * @param file         where to save, e.g. Paths.get("users.json")
+     * @param movieIdFn    function that converts a Movie → String ID to store
 
     Class invariants:
     - Starting favorite movie list is empty list
     - UserID ad
      */
-    private String username;
-    private String password;
-    private ArrayList<Movie> favorites;
-    private static Map<String, String> userPassowrdMap = new HashMap<>();
-    private static Map<String, User> userMap = new HashMap<>();
+
+    private final String username;
+    private final String password;
+    private final ArrayList<Movie> favorites;
+    private static final Map<String, String> userPasswordMap = new HashMap<>();
+    private static final Map<String, User> userMap = new HashMap<>();
 
     public User(String username, String password) throws UsernameTakenException {
-        if (userPassowrdMap.containsKey(username)) {
+        if (userPasswordMap.containsKey(username)) {
             throw new UsernameTakenException();
         }
 
@@ -39,7 +49,7 @@ public class User {
         this.password = password;
         this.favorites = new ArrayList<>();
         userMap.put(username, this);
-        userPassowrdMap.put(username, password);
+        userPasswordMap.put(username, password);
     }
 
     public String getUsername(){
@@ -47,11 +57,13 @@ public class User {
     }
 
     public static Map<String, String> getUserPasswordMap(){
-        return userPassowrdMap;
+        return userPasswordMap;
     }
 
+    public static Map<String, User> getUserMap(){ return userMap;}
+
     public static boolean checkValidUser(String username) throws UserNotFoundException {
-        if ( userMap == null || userMap.isEmpty()){
+        if (userMap.isEmpty()){
             throw new UserNotFoundException();
         }
         return userMap.containsKey(username);
@@ -68,7 +80,6 @@ public class User {
         else{
             this.favorites.add(movie);
         }
-
     }
 
     public void unfavoriteMovie(Movie movie){
@@ -78,4 +89,7 @@ public class User {
     public List<Movie> getFavorites(){
         return new ArrayList<>(this.favorites);
     }
+
+
+
 }

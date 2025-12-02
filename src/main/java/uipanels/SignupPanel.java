@@ -5,21 +5,23 @@ import controllers.LoginManager;
 import javax.swing.*;
 
 public class SignupPanel extends JPanel{
-    public JButton signUpButton;
-    public JButton backButton;
+    public final JButton signUpButton;
+    public final JButton backButton;
+    public final JTextField usernameBox;
+    public final JTextField passwordBox;
 
-    public SignupPanel(LoginManager loginManager) {
+    public SignupPanel() {
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 
         JPanel usernamePanel = new JPanel();
         JLabel usernameLabel = new JLabel("Username:");
-        JTextField usernameBox = new JTextField(20);
+        usernameBox = new JTextField(20);
         usernamePanel.add(usernameLabel);
         usernamePanel.add(usernameBox);
 
         JPanel passwordPanel = new JPanel();
         JLabel passwordLabel = new JLabel("Password:");
-        JTextField passwordBox = new JTextField(20);
+        passwordBox = new JTextField(20);
         passwordPanel.add(passwordLabel);
         passwordPanel.add(passwordBox);
 
@@ -28,13 +30,6 @@ public class SignupPanel extends JPanel{
         backButton = new JButton("Back");
         buttonPanel.add(signUpButton);
         buttonPanel.add(backButton);
-
-        signUpButton.addActionListener(e ->{
-            String username = usernameBox.getText();
-            String password = passwordBox.getText();
-            loginManager.createAccount(username, password);
-
-        });
 
         add(usernamePanel);
         add(passwordPanel);

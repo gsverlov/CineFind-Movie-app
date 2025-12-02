@@ -45,8 +45,6 @@ public class MovieDetailsWindow extends JFrame {
         heartButton.setContentAreaFilled(false);
         heartButton.setCursor(new Cursor(Cursor.HAND_CURSOR));
 
-        updateHeartState(loginManager);
-
         heartButton.addActionListener(e -> toggleFavorite(loginManager));
 
         headerPanel.add(titleLabel, BorderLayout.CENTER);
@@ -93,10 +91,9 @@ public class MovieDetailsWindow extends JFrame {
         if (!isFav) {
             heartButton.setText(isFav ? "❤" : "♡"); // 實心 vs 空心
             heartButton.setForeground(isFav ? Color.RED : Color.BLACK);
-        }
-        else {
-            heartButton.setText(isFav ? "♡":"❤" ); // 實心 vs 空心
-            heartButton.setForeground(isFav ? Color.BLACK: Color.RED);
+        } else {
+            heartButton.setText(isFav ? "♡" : "❤"); // 實心 vs 空心
+            heartButton.setForeground(isFav ? Color.BLACK : Color.RED);
 
         }
 
@@ -104,11 +101,11 @@ public class MovieDetailsWindow extends JFrame {
 
     private void toggleFavorite(LoginManager loginManager) {
         User user = loginManager.getLoggedInUser();
-        boolean isFav = user.getFavorites().contains(movie);
         if(user == null){
             JOptionPane.showMessageDialog(null, "You must be logged in.");
             return;
         }
+        boolean isFav = user.getFavorites().contains(movie);
         if(!isFav) {
             try {
                 user.favoriteMovie(movie);

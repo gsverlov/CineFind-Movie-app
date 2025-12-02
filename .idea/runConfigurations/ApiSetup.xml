@@ -9,6 +9,7 @@
     </envs>
     <option name="MAIN_CLASS_NAME" value="main.Main" />
     <module name="TeamProject" />
+    <option name="PROGRAM_PARAMETERS" value="--enable-native-access=ALL-UNNAMED " />
     <method v="2">
       <option name="Make" enabled="true" />
     </method>
