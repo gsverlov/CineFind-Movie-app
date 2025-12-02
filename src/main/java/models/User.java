@@ -4,16 +4,10 @@ import exceptions.MovieAlreadyFavoritedException;
 import exceptions.PasswordsNotEqualException;
 import exceptions.UserNotFoundException;
 import exceptions.UsernameTakenException;
-
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.List;
-import org.json.JSONArray;
-import org.json.JSONObject;
 
 public class User {
     /* Represents an individual user for the program.

@@ -41,7 +41,7 @@ public class LoginPanel extends JPanel {
             String password = passwordBox.getText();
 
             try {
-                loginManager.login(username, password);
+                loginManager.loginInteractor(username, password);
 
                 // 成功：顯示訊息並清空欄位
                 JOptionPane.showMessageDialog(this, "Login Successful!");

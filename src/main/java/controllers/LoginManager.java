@@ -7,13 +7,12 @@ import models.User;
 
 import java.util.Map;
 import java.util.logging.Logger;
-import uipanels.SearchPanel;
 
 public class LoginManager {
     private User loggedInUser;
     private static final Logger logger = Logger.getLogger(LoginManager.class.getName());
 
-    public void login(String username, String password) throws UserNotFoundException, WrongPasswordException {
+    public void loginInteractor(String username, String password) throws UserNotFoundException, WrongPasswordException {
         if (!User.checkValidUser(username)) {
             throw new UserNotFoundException();
         }

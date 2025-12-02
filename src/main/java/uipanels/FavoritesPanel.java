@@ -21,6 +21,24 @@ public class FavoritesPanel extends JPanel {
 
         this.loginManager = loginManager;
 
+        String titleText = "Your Favorite Movies:";
+
+        if (loginManager.isLoggedIn()) {
+            User user = loginManager.getLoggedInUser();
+            String username = user.getUsername();
+
+            char last = username.charAt(username.length() - 1);
+
+            if (last == 's' || last == 'S') {
+                titleText = username + "' favorite movies";
+            } else {
+                titleText = username + "'s favorite movies";
+            }
+        }
+
+        JLabel title = new JLabel(titleText);
+        add(title);  // <-- THIS is required
+
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 
         favoritesList = new JList<>();
@@ -51,7 +69,7 @@ public class FavoritesPanel extends JPanel {
                 favoritesList.clearSelection();
             }
         });
-        add(new JLabel("Your Favorite Movies:"));
+        add(title);
         add(scrollPane);
         add(favoritesBackButton);
     }
@@ -75,5 +93,34 @@ public class FavoritesPanel extends JPanel {
         // 強制刷新 UI，確保視覺上立即反應
         favoritesList.revalidate();
         favoritesList.repaint();
+    }
+
+    public void buildUI(LoginManager loginManager) {
+        removeAll();  // Clears old UI
+
+        JLabel title;
+
+        if (loginManager.isLoggedIn()) {
+            User user = loginManager.getLoggedInUser();
+            String username = user.getUsername();
+            char last = username.charAt(username.length() - 1);
+
+            // English grammar for possessive
+            if (last == 's' || last == 'S') {
+                title = new JLabel(username + "' favorite movies");
+            } else {
+                title = new JLabel(username + "'s favorite movies");
+            }
+        } else {
+            title = new JLabel("Your Favorite Movies:");
+        }
+
+        add(title);
+
+        // Reload the actual favorite movies list
+        loadFavoritesIntoList();
+
+        revalidate();
+        repaint();
     }
 }
