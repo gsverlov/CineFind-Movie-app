@@ -72,13 +72,32 @@ public class User {
         return userMap.containsKey(username);
     }
 
-    public void changeUsername(String username){
+    public void changeUsername(String username) throws UsernameTakenException{
+        if (userPasswordMap.containsKey(username)){
+            throw new UsernameTakenException();
+        }
+
+        String oldUsername = this.username;
+
+        //Get Existing password for this user
+        String pwd = userPasswordMap.get(oldUsername);
+
+        //remove old keys
+        userPasswordMap.remove(oldUsername);
+        userMap.remove(oldUsername);
+
+        //update the field
         this.username = username;
+
+        //reinsert under new username
+        userPasswordMap.put(username,pwd);
+        userMap.put(username,this);
     }
 
     public void changePassword(String password1, String password2) throws PasswordsNotEqualException {
         if (password1.equals(password2)){
-            userPasswordMap.put(this.username, password1);
+            this.password = password1;
+            userPasswordMap.put(this.username, this.password);
         }
         else{
             throw new PasswordsNotEqualException();

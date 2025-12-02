@@ -17,9 +17,7 @@ import org.json.JSONObject;
 import org.json.JSONArray;
 import uipanels.*;
 import exceptions.*;
-import apiservices.*;
 import controllers.*;
-import models.*;
 
 import javax.swing.WindowConstants;
 
@@ -53,7 +51,9 @@ public class Main {
             frame.setMinimumSize(new java.awt.Dimension(300, 200));
             frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 
-            JPanel cardPanel = new JPanel(new CardLayout());
+            CardLayout layout = new CardLayout();
+            JPanel container = new JPanel(layout);
+            CardLayout cl = (CardLayout) container.getLayout();
 
             // Panels
             LoginPanel loginPanel = new LoginPanel(loginManager);
@@ -70,25 +70,24 @@ public class Main {
 
             ChangeUserPanel changeUserPanel = new ChangeUserPanel(loginManager);
 
-            ChangePasswordPanel changePasswordPanel = new ChangePasswordPanel(loginManager);
+            ChangePasswordPanel changePasswordPanel = new ChangePasswordPanel();
 
 
 
-            cardPanel.add(searchPanel, CARD_SEARCH);
-            cardPanel.add(favoritesPanel, CARD_FAVORITES);
-            cardPanel.add(advancedPanel, CARD_ADVANCED);
-            cardPanel.add(resultsPanel, CARD_RESULTS);
-            cardPanel.add(loginPanel, CARD_LOGIN);
-            cardPanel.add(signupPanel, CARD_SIGNUP);
-            cardPanel.add(profilePanel, CARD_PROFILE);
-            cardPanel.add(changeUserPanel,CARD_USER);
-            cardPanel.add(changePasswordPanel,CARD_PASS);
+            container.add(searchPanel, CARD_SEARCH);
+            container.add(favoritesPanel, CARD_FAVORITES);
+            container.add(advancedPanel, CARD_ADVANCED);
+            container.add(resultsPanel, CARD_RESULTS);
+            container.add(loginPanel, CARD_LOGIN);
+            container.add(signupPanel, CARD_SIGNUP);
+            container.add(profilePanel, CARD_PROFILE);
+            container.add(changeUserPanel,CARD_USER);
+            container.add(changePasswordPanel,CARD_PASS);
 
 
-            frame.setContentPane(cardPanel);
+            frame.setContentPane(container);
             frame.setVisible(true);
 
-            CardLayout cl = (CardLayout) (cardPanel.getLayout());
 
             // --- Handle click on Search Result List ---
             resultsPanel.movieList.addListSelectionListener(e -> {
@@ -120,7 +119,7 @@ public class Main {
                     new MovieDetailsWindow(historyMovie, interactor, loginManager, null);
                 }
                 // Case B: models.User typed text and pressed Enter (String)
-                else {
+                else{
                     String searchText = item.toString().trim();
                     if(searchText.equals("")) {
                         JOptionPane.showMessageDialog(frame, "Type something man!");
@@ -151,11 +150,12 @@ public class Main {
                             );
                         }
                         resultsPanel.movieList.setListData(ms);
-                        cl.show(cardPanel, CARD_RESULTS);
+                        cl.show(container, CARD_RESULTS);
 
                     } catch(Exception ex){
                         ex.printStackTrace();
                         JOptionPane.showMessageDialog(frame, "Error: " + ex.getMessage());
+                        return;
                     }
                 }
             };
@@ -165,42 +165,64 @@ public class Main {
             // --- Navigation Buttons ---
             loginPanel.backButton.addActionListener(e -> {
               loginPanel.clearFields(); //empty text field
-              cl.show(cardPanel, CARD_SEARCH);
+              cl.show(container, CARD_SEARCH);
             });
 
             signupPanel.backButton.addActionListener(e -> {
                 signupPanel.clearFields(); // empty text field
-                cl.show(cardPanel, CARD_SEARCH);
+                cl.show(container, CARD_SEARCH);
             });
-            profilePanel.backButton.addActionListener(e -> cl.show(cardPanel, CARD_SEARCH));
-            profilePanel.userButton.addActionListener(e -> cl.show(cardPanel, CARD_USER));
-            profilePanel.passButton.addActionListener(e -> cl.show(cardPanel, CARD_PASS));
-            changeUserPanel.backButton.addActionListener(e -> cl.show(cardPanel, CARD_SEARCH));
-            changePasswordPanel.backButton.addActionListener(e -> cl.show(cardPanel, CARD_SEARCH));
-            resultsPanel.resultsBackButton.addActionListener(e -> cl.show(cardPanel, CARD_SEARCH));
-            favoritesPanel.favoritesBackButton.addActionListener(e -> cl.show(cardPanel, CARD_SEARCH));
-            advancedPanel.advancedBackButton.addActionListener(e -> cl.show(cardPanel, CARD_SEARCH));
+            profilePanel.backButton.addActionListener(e -> cl.show(container, CARD_SEARCH));
+            profilePanel.userButton.addActionListener(e -> cl.show(container, CARD_USER));
+            profilePanel.passButton.addActionListener(e -> cl.show(container, CARD_PASS));
+            changeUserPanel.backButton.addActionListener(e -> cl.show(container, CARD_PROFILE));
+            changePasswordPanel.backButton.addActionListener(e -> cl.show(container, CARD_PROFILE));
+            resultsPanel.resultsBackButton.addActionListener(e -> cl.show(container, CARD_SEARCH));
+            favoritesPanel.favoritesBackButton.addActionListener(e -> cl.show(container, CARD_SEARCH));
+            advancedPanel.advancedBackButton.addActionListener(e -> cl.show(container, CARD_SEARCH));
             searchPanel.favoriteButton.addActionListener(e ->{
                 favoritesPanel.loadFavoritesIntoList();
-                cl.show(cardPanel, CARD_FAVORITES);
+                cl.show(container, CARD_FAVORITES);
             });
-            searchPanel.advancedButton.addActionListener(e -> cl.show(cardPanel, CARD_ADVANCED));
-            searchPanel.loginButton.addActionListener(e-> cl.show(cardPanel,CARD_LOGIN));
-            searchPanel.signupButton.addActionListener(e-> cl.show(cardPanel,CARD_SIGNUP));
-            searchPanel.profileButton.addActionListener(e -> cl.show(cardPanel, CARD_PROFILE));
-            String newUsername = changeUserPanel.userText.getText();
-            if (loginManager.isLoggedIn()) {
+            searchPanel.advancedButton.addActionListener(e -> cl.show(container, CARD_ADVANCED));
+            searchPanel.loginButton.addActionListener(e-> cl.show(container,CARD_LOGIN));
+            searchPanel.signupButton.addActionListener(e-> cl.show(container,CARD_SIGNUP));
+            searchPanel.profileButton.addActionListener(e -> cl.show(container, CARD_PROFILE));
+
+
+            changeUserPanel.submitButton.addActionListener(e -> {
+                if (!loginManager.isLoggedIn()) {
+                    JOptionPane.showMessageDialog(frame, "You must be logged in to change username.");
+                    return;
+                }
                 User user = loginManager.getLoggedInUser();
-                changeUserPanel.submitButton.addActionListener(e -> user.changeUsername(newUsername));
-            }
-            String pass1 = changePasswordPanel.passText1.getText();
-            String pass2 = changePasswordPanel.passText2.getText();
+                String newUsername = changeUserPanel.userText.getText();
+                try {
+                    user.changeUsername(newUsername);
+                } catch (UsernameTakenException ex) {
+                    JOptionPane.showMessageDialog(frame, "You must be logged in to change username.");
+                    return;
+                }
+                profilePanel.buildUI(loginManager);
+                cl.show(container, CARD_PROFILE);
+            });
+
+
             changePasswordPanel.submitButton.addActionListener(e -> {
                 try {
+                    if (!loginManager.isLoggedIn()){
+                        JOptionPane.showMessageDialog(frame, "You must be logged in to change password.");
+                        return;
+                    }
                     User user = loginManager.getLoggedInUser();
+                    String pass1 = changePasswordPanel.passText1.getText();
+                    String pass2 = changePasswordPanel.passText2.getText();
                     user.changePassword(pass1,pass2);
+                    profilePanel.buildUI(loginManager);
+                    cl.show(container, CARD_PROFILE);
                 } catch (PasswordsNotEqualException ex) {
-                    throw new RuntimeException(ex);
+                    JOptionPane.showMessageDialog(frame, ex.getMessage());
+                    return;
                 }
             });
 
@@ -210,18 +232,18 @@ public class Main {
                 try {
                     loginManager.createAccount(username, password);
                 } catch (UsernameTakenException ex) {
-                    throw new RuntimeException(ex);
+                    JOptionPane.showMessageDialog(frame, ex.getMessage());
+                    return;
                 }
 
                 try {
                     loginManager.login(username, password);
-                    User user = loginManager.getLoggedInUser();
                 } catch (UserNotFoundException | WrongPasswordException ex) {
+                    JOptionPane.showMessageDialog(frame, ex.getMessage());
                     return;
                 }
-
-                cl.show(cardPanel,CARD_SEARCH);
-
+                profilePanel.buildUI(loginManager);
+                cl.show(container, CARD_PROFILE);
             });
 
             loginPanel.loginButton.addActionListener(e -> {
@@ -230,11 +252,11 @@ public class Main {
 
                 try {
                     loginManager.login(username, password);
-                    User user = loginManager.getLoggedInUser();
                 } catch (UserNotFoundException | WrongPasswordException ex) {
                     return;
                 }
-                cl.show(cardPanel,CARD_SEARCH);
+                profilePanel.buildUI(loginManager); // refresh to show correct user
+                cl.show(container, CARD_PROFILE);
 
             });
 
@@ -247,7 +269,7 @@ public class Main {
                     try {
                         ExtractData.saveToJson(jsonFile);
                     } catch (IOException ex) {
-                        throw new RuntimeException(ex);
+                        JOptionPane.showMessageDialog(frame, ex.getMessage());
                     }
                 }
             });
@@ -257,7 +279,7 @@ public class Main {
                         @Override
                         public void show(String name) {
                             if (name.equals(AppController.RESULTS)) {
-                                cl.show(cardPanel, CARD_RESULTS);
+                                cl.show(container, CARD_RESULTS);
                             }
                         }
                     });
