@@ -74,7 +74,7 @@ public class Main {
                         searchPanel.addToHistory(selected);
                         ViewMovieDetailsInteractor interactor =
                                 new ViewMovieDetailsInteractor(new OMDbApiClient(System.getenv("OMBD_API_KEY")));
-                        new MovieDetailsWindow(selected, interactor, loginManager);
+                        new MovieDetailsWindow(selected, interactor, loginManager, null);
                     }
                 }
             });
@@ -92,7 +92,7 @@ public class Main {
                     // --- 修正 4: 這裡也要更新為新的建構子 ---
                     ViewMovieDetailsInteractor interactor =
                             new ViewMovieDetailsInteractor(new OMDbApiClient(System.getenv("OMBD_API_KEY")));
-                    new MovieDetailsWindow(historyMovie, interactor, loginManager);
+                    new MovieDetailsWindow(historyMovie, interactor, loginManager, null);
                 }
                 // Case B: models.User typed text and pressed Enter (String)
                 else {
@@ -138,8 +138,15 @@ public class Main {
             searchPanel.searchBox.addActionListener(searchAction);
 
             // --- Navigation Buttons ---
-            loginPanel.backButton.addActionListener(e -> cl.show(cardPanel, CARD_SEARCH));
-            signupPanel.backButton.addActionListener(e -> cl.show(cardPanel, CARD_SEARCH));
+            loginPanel.backButton.addActionListener(e -> {
+                loginPanel.clearFields(); // empty text field
+                cl.show(cardPanel, CARD_SEARCH);
+            });
+
+            signupPanel.backButton.addActionListener(e -> {
+                signupPanel.clearFields(); // empty text field
+                cl.show(cardPanel, CARD_SEARCH);
+            });
             resultsPanel.resultsBackButton.addActionListener(e -> cl.show(cardPanel, CARD_SEARCH));
             favoritesPanel.favoritesBackButton.addActionListener(e -> cl.show(cardPanel, CARD_SEARCH));
             advancedPanel.advancedBackButton.addActionListener(e -> cl.show(cardPanel, CARD_SEARCH));
