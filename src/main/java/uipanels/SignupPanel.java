@@ -1,7 +1,7 @@
 package uipanels;
 
 import controllers.LoginManager;
-import exceptions.UsernameTakenException; // 記得 import 這個異常
+import exceptions.UsernameTakenException;
 
 import javax.swing.*;
 
@@ -16,13 +16,13 @@ public class SignupPanel extends JPanel {
 
         JPanel usernamePanel = new JPanel();
         JLabel usernameLabel = new JLabel("Username:");
-        usernameBox = new JTextField(20); // 這裡不用再宣告型別，使用上面的成員變數
+        usernameBox = new JTextField(20);
         usernamePanel.add(usernameLabel);
         usernamePanel.add(usernameBox);
 
         JPanel passwordPanel = new JPanel();
         JLabel passwordLabel = new JLabel("Password:");
-        passwordBox = new JTextField(20); // 同上
+        passwordBox = new JTextField(20);
         passwordPanel.add(passwordLabel);
         passwordPanel.add(passwordBox);
 
@@ -32,27 +32,24 @@ public class SignupPanel extends JPanel {
         buttonPanel.add(signUpButton);
         buttonPanel.add(backButton);
 
-        // --- [FIX] 修改後的監聽器 ---
         signUpButton.addActionListener(e -> {
             String username = usernameBox.getText();
             String password = passwordBox.getText();
 
-            // 檢查輸入是否為空
+            // check if input is empty
             if (username.trim().isEmpty() || password.trim().isEmpty()) {
                 JOptionPane.showMessageDialog(this, "Username and Password cannot be empty!");
                 return;
             }
 
             try {
-                // 嘗試建立帳號
                 loginManager.createAccount(username, password);
 
-                // 成功：顯示訊息並清空欄位
+                // empty text field
                 JOptionPane.showMessageDialog(this, "Registration Successful! Please Login.");
                 clearFields();
 
             } catch (UsernameTakenException ex) {
-                // 失敗：顯示錯誤訊息
                 JOptionPane.showMessageDialog(this, "Username already taken. Please choose another one.");
             }
         });
