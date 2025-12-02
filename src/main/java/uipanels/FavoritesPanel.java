@@ -23,6 +23,8 @@ public class FavoritesPanel extends JPanel {
 
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 
+        setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
+
         favoritesList = new JList<>();
         favoritesList.setCellRenderer(new MovieCellRenderer());
 

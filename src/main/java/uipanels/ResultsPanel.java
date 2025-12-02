@@ -14,6 +14,8 @@ public class ResultsPanel extends JPanel {
     public ResultsPanel(LoginManager loginManager) {
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 
+        setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
+
         movieList = new JList<>();
 
         movieList.setCellRenderer(new MovieCellRenderer());
