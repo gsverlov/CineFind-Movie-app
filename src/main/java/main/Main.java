@@ -279,7 +279,7 @@ public class Main {
                 }
 
                 try {
-                    loginManager.login(username, password);
+                    loginManager.loginInteractor(username, password);
                     JOptionPane.showMessageDialog(frame, "Account created and logged in!");
                 } catch (UserNotFoundException | WrongPasswordException ex) {
                     JOptionPane.showMessageDialog(frame, ex.getMessage());
@@ -294,7 +294,7 @@ public class Main {
                 String password = loginPanel.passwordBox.getText();
 
                 try {
-                    loginManager.login(username, password);
+                    loginManager.loginInteractor(username, password);
                     JOptionPane.showMessageDialog(frame, "Welcome back, " + username + "!");
                 } catch (UserNotFoundException | WrongPasswordException ex) {
                     JOptionPane.showMessageDialog(frame, "Invalid username or password.");
