@@ -12,7 +12,7 @@ public class UpdateSearchHistoryInteractor {
             return new ArrayList<>();
         }
 
-        ArrayList<Movie> history = user.getSearchHistory();
+        List<Movie> history = user.getSearchHistory();
 
         history.removeIf(m -> m.imdbID.equals(movie.imdbID));
 
