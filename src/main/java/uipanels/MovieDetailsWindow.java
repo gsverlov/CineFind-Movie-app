@@ -5,6 +5,7 @@ import java.awt.*;
 import java.net.URL;
 
 import controllers.LoginManager;
+import controllers.AddFavoriteInteractor;
 import controllers.ViewMovieDetailsInteractor;
 import exceptions.MovieAlreadyFavoritedException;
 import models.Movie;
@@ -103,25 +104,28 @@ public class MovieDetailsWindow extends JFrame {
     }
 
     private void toggleFavorite(LoginManager loginManager) {
-        User user = loginManager.getLoggedInUser();
-        boolean isFav = user.getFavorites().contains(movie);
-        if(user == null){
+        if (!loginManager.isLoggedIn()) {
             JOptionPane.showMessageDialog(null, "You must be logged in.");
             return;
         }
-        if(!isFav) {
-            try {
-                user.favoriteMovie(movie);
-                JOptionPane.showMessageDialog(null, "Added to favorites!");
-            } catch (MovieAlreadyFavoritedException ex) {
-                JOptionPane.showMessageDialog(null, ex.getMessage());
-            }
-        }
 
-        else {
+        User user = loginManager.getLoggedInUser();
+        boolean isFav = user.getFavorites().contains(movie);
+
+        if (!isFav) {
+            AddFavoriteInteractor addInteractor = new AddFavoriteInteractor();
+            boolean success = addInteractor.execute(user, movie);
+
+            if (success) {
+                JOptionPane.showMessageDialog(null, "Added to favorites!");
+            } else {
+                JOptionPane.showMessageDialog(null, "Could not add to favorites (Already exists).");
+            }
+        } else {
             user.unfavoriteMovie(movie);
             JOptionPane.showMessageDialog(null, "Removed from favorites!");
         }
+
         updateHeartState(loginManager);
     }
 
