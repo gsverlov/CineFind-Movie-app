@@ -21,14 +21,15 @@ public class SearchPanel extends JPanel {
 
     public SearchPanel(LoginManager loginManager) {
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
+        setBorder(BorderFactory.createEmptyBorder(40, 40, 40, 40)); // 四周留白，增加呼吸感
 
-        topButtonPanel = new JPanel();
-        add(topButtonPanel); // make sure you actually add it to this panel
+        topButtonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT)); // 靠右對齊
+        topButtonPanel.setMaximumSize(new Dimension(1000, 50)); // 限制高度
+        topButtonPanel.setOpaque(false); // 透明背景，吃底色
 
-        loginButton = new JButton("Login");
-        signupButton = new JButton("Signup");
-        profileButton = new JButton("Profile Settings");
-
+        loginButton = createStyledButton("Login");
+        signupButton = createStyledButton("Signup");
+        profileButton = createStyledButton("Profile Settings");
 
         topButtonPanel.add(loginButton);
         topButtonPanel.add(signupButton);
@@ -36,42 +37,40 @@ public class SearchPanel extends JPanel {
 
         updateButtons(loginManager);
 
-        // Focus Fix
-        setFocusable(true);
-        addMouseListener(new MouseAdapter() {
-            @Override
-            public void mousePressed(MouseEvent e) {
-                requestFocusInWindow();
-            }
-        });
+        JLabel titleLabel = new JLabel("CINEFIND");
+        titleLabel.setFont(new Font("SansSerif", Font.BOLD, 48)); // 超大字體
+        titleLabel.setForeground(new Color(229, 9, 20)); // Netflix 紅
+        titleLabel.setAlignmentX(Component.CENTER_ALIGNMENT); // 置中
 
-        // --- 1. Search Area ---
-        JPanel firstSearchPanel = new JPanel();
-        firstSearchPanel.add(new JLabel("Search Movie:"));
+        JLabel subtitleLabel = new JLabel("Discover your next favorite movie");
+        subtitleLabel.setFont(new Font("SansSerif", Font.PLAIN, 16));
+        subtitleLabel.setForeground(Color.LIGHT_GRAY);
+        subtitleLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
 
-        firstSearchPanel.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mousePressed(MouseEvent e) {
-                SearchPanel.this.requestFocusInWindow();
-            }
-        });
+        JPanel searchContainer = new JPanel();
+        searchContainer.setLayout(new BoxLayout(searchContainer, BoxLayout.Y_AXIS));
+        searchContainer.setOpaque(false);
+        searchContainer.setAlignmentX(Component.CENTER_ALIGNMENT);
 
-        // Initialize ComboBox
+        JLabel searchLabel = new JLabel("Search Movie Title:");
+        searchLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        searchLabel.setFont(new Font("SansSerif", Font.BOLD, 14));
+
         searchBox = new JComboBox<>();
         searchBox.setEditable(true);
-
-        searchBox.setPreferredSize(new Dimension(500, 30));
-
         searchBox.setRenderer(new MovieCellRenderer());
 
-        // Hide arrow
+        Dimension searchSize = new Dimension(400, 40);
+        searchBox.setPreferredSize(searchSize);
+        searchBox.setMaximumSize(searchSize);
+
         searchBox.setUI(new BasicComboBoxUI() {
             @Override
             protected JButton createArrowButton() {
-                return new JButton() {
-                    @Override
-                    public int getWidth() { return 0; }
-                };
+                JButton b = new JButton();
+                b.setBorder(BorderFactory.createEmptyBorder());
+                b.setVisible(false);
+                return b;
             }
         });
 
@@ -85,46 +84,65 @@ public class SearchPanel extends JPanel {
             }
         });
 
-        firstSearchPanel.add(searchBox);
+        searchContainer.add(searchLabel);
+        searchContainer.add(Box.createVerticalStrut(10)); // 標籤和輸入框的間距
+        searchContainer.add(searchBox);
 
-        // Buttons Area
-        JPanel secondSearchPanel = new JPanel();
-        favoriteButton = new JButton("Favorite List");
-        advancedButton = new JButton("Advanced Search");
-        secondSearchPanel.add(favoriteButton);
-        secondSearchPanel.add(advancedButton);
+        JPanel actionButtonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 0)); // 左右間距 20
+        actionButtonPanel.setOpaque(false);
+        actionButtonPanel.setMaximumSize(new Dimension(600, 50));
 
-        secondSearchPanel.addMouseListener(new MouseAdapter() {
+        favoriteButton = createStyledButton("My Favorites");
+        advancedButton = createStyledButton("Advanced Search");
+
+        favoriteButton.setPreferredSize(new Dimension(150, 40));
+        advancedButton.setPreferredSize(new Dimension(160, 40));
+
+        actionButtonPanel.add(favoriteButton);
+        actionButtonPanel.add(advancedButton);
+
+        add(topButtonPanel);
+
+        add(Box.createVerticalGlue());
+        add(titleLabel);
+        add(Box.createVerticalStrut(10));
+        add(subtitleLabel);
+
+        add(Box.createVerticalStrut(40));
+        add(searchContainer);
+
+        add(Box.createVerticalStrut(30));
+        add(actionButtonPanel);
+        add(Box.createVerticalGlue());
+        add(Box.createVerticalGlue());
+
+        addMouseListener(new MouseAdapter() {
             @Override
             public void mousePressed(MouseEvent e) {
-                SearchPanel.this.requestFocusInWindow();
+                requestFocusInWindow();
             }
         });
+    }
 
-        // Add components
-        add(Box.createVerticalStrut(50));
-        add(topButtonPanel);
-        add(firstSearchPanel);
-        add(secondSearchPanel);
-        add(Box.createVerticalStrut(100));
+    private JButton createStyledButton(String text) {
+        JButton btn = new JButton(text);
+        btn.setFocusPainted(false);
+        btn.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        return btn;
     }
 
     public void updateButtons(LoginManager loginManager) {
         boolean loggedIn = loginManager.isLoggedIn();
-
         loginButton.setVisible(!loggedIn);
         signupButton.setVisible(!loggedIn);
         profileButton.setVisible(loggedIn);
-
         topButtonPanel.revalidate();
         topButtonPanel.repaint();
     }
 
     public void addToHistory(Movie movie) {
         if (movie == null) return;
-
         DefaultComboBoxModel<Object> model = (DefaultComboBoxModel<Object>) searchBox.getModel();
-
         for (int i = 0; i < model.getSize(); i++) {
             Object item = model.getElementAt(i);
             if (item instanceof Movie) {
@@ -135,9 +153,7 @@ public class SearchPanel extends JPanel {
                 }
             }
         }
-
         model.insertElementAt(movie, 0);
-
         if (model.getSize() > 5) {
             model.removeElementAt(5);
         }
