@@ -1,0 +1,34 @@
+# Sample models.Movie List for Embedding Pipeline
+# One movie title per line
+# Lines starting with # are ignored
+
+The Shawshank Redemption
+The Godfather
+The Dark Knight
+Pulp Fiction
+Forrest Gump
+Inception
+The Matrix
+Goodfellas
+Fight Club
+The Lord of the Rings: The Fellowship of the Ring
+Star Wars: Episode V - The Empire Strikes Back
+The Silence of the Lambs
+Interstellar
+Parasite
+Spirited Away
+The Departed
+Gladiator
+The Prestige
+Whiplash
+The Green Mile
+The Usual Suspects
+Se7en
+The Lion King
+Back to the Future
+Apocalypse Now
+The Pianist
+Memento
+The Shining
+Blade Runner
+Eternal Sunshine of the Spotless Mind
