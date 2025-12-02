@@ -42,6 +42,10 @@ public class Main {
         final String CARD_ADVANCED = "ADVANCED";
         final String CARD_LOGIN = "LOGIN";
         final String CARD_SIGNUP = "SIGNUP";
+        final String CARD_PROFILE = "PROFILE";
+        final String CARD_USER = "USER";
+        final String CARD_PASS = "PASS";
+
 
         SwingUtilities.invokeLater(() -> {
 
@@ -55,12 +59,18 @@ public class Main {
             LoginPanel loginPanel = new LoginPanel(loginManager);
             SignupPanel signupPanel = new SignupPanel();
 
-            SearchPanel searchPanel = new SearchPanel();
+            SearchPanel searchPanel = new SearchPanel(loginManager);
             ResultsPanel resultsPanel = new ResultsPanel(loginManager);
 
             FavoritesPanel favoritesPanel = new FavoritesPanel(loginManager);
 
             AdvancedPanel advancedPanel = new AdvancedPanel();
+
+            ProfilePanel profilePanel = new ProfilePanel(loginManager);
+
+            ChangeUserPanel changeUserPanel = new ChangeUserPanel(loginManager);
+
+            ChangePasswordPanel changePasswordPanel = new ChangePasswordPanel(loginManager);
 
 
 
@@ -70,6 +80,9 @@ public class Main {
             cardPanel.add(resultsPanel, CARD_RESULTS);
             cardPanel.add(loginPanel, CARD_LOGIN);
             cardPanel.add(signupPanel, CARD_SIGNUP);
+            cardPanel.add(profilePanel, CARD_PROFILE);
+            cardPanel.add(changeUserPanel,CARD_USER);
+            cardPanel.add(changePasswordPanel,CARD_PASS);
 
 
             frame.setContentPane(cardPanel);
@@ -152,6 +165,11 @@ public class Main {
             // --- Navigation Buttons ---
             loginPanel.backButton.addActionListener(e -> cl.show(cardPanel, CARD_SEARCH));
             signupPanel.backButton.addActionListener(e -> cl.show(cardPanel, CARD_SEARCH));
+            profilePanel.backButton.addActionListener(e -> cl.show(cardPanel, CARD_SEARCH));
+            profilePanel.userButton.addActionListener(e -> cl.show(cardPanel, CARD_USER));
+            profilePanel.passButton.addActionListener(e -> cl.show(cardPanel, CARD_PASS));
+            changeUserPanel.backButton.addActionListener(e -> cl.show(cardPanel, CARD_SEARCH));
+            changePasswordPanel.backButton.addActionListener(e -> cl.show(cardPanel, CARD_SEARCH));
             resultsPanel.resultsBackButton.addActionListener(e -> cl.show(cardPanel, CARD_SEARCH));
             favoritesPanel.favoritesBackButton.addActionListener(e -> cl.show(cardPanel, CARD_SEARCH));
             advancedPanel.advancedBackButton.addActionListener(e -> cl.show(cardPanel, CARD_SEARCH));
@@ -162,6 +180,22 @@ public class Main {
             searchPanel.advancedButton.addActionListener(e -> cl.show(cardPanel, CARD_ADVANCED));
             searchPanel.loginButton.addActionListener(e-> cl.show(cardPanel,CARD_LOGIN));
             searchPanel.signupButton.addActionListener(e-> cl.show(cardPanel,CARD_SIGNUP));
+            searchPanel.profileButton.addActionListener(e -> cl.show(cardPanel, CARD_PROFILE));
+            String newUsername = changeUserPanel.userText.getText();
+            if (loginManager.isLoggedIn()) {
+                User user = loginManager.getLoggedInUser();
+                changeUserPanel.submitButton.addActionListener(e -> user.changeUsername(newUsername));
+            }
+            String pass1 = changePasswordPanel.passText1.getText();
+            String pass2 = changePasswordPanel.passText2.getText();
+            changePasswordPanel.submitButton.addActionListener(e -> {
+                try {
+                    User user = loginManager.getLoggedInUser();
+                    user.changePassword(pass1,pass2);
+                } catch (PasswordsNotEqualException ex) {
+                    throw new RuntimeException(ex);
+                }
+            });
 
             signupPanel.signUpButton.addActionListener(e ->{
                 String username = signupPanel.usernameBox.getText();

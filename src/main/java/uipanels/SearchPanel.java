@@ -1,5 +1,6 @@
 package uipanels;
 
+import controllers.LoginManager;
 import models.Movie;
 
 import javax.swing.*;
@@ -15,16 +16,25 @@ public class SearchPanel extends JPanel {
     public JButton advancedButton;
     public JButton loginButton;
     public JButton signupButton;
+    public JButton profileButton;
+    public JPanel topButtonPanel;
 
-    public SearchPanel() {
+    public SearchPanel(LoginManager loginManager) {
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 
-        //upper Login and Signup buttons
-        JPanel topButtonPanel = new JPanel();
+        topButtonPanel = new JPanel();
+        add(topButtonPanel); // make sure you actually add it to this panel
+
         loginButton = new JButton("Login");
         signupButton = new JButton("Signup");
+        profileButton = new JButton("Profile Settings");
+
+
         topButtonPanel.add(loginButton);
         topButtonPanel.add(signupButton);
+        topButtonPanel.add(profileButton);
+
+        updateButtons(loginManager);
 
         // Focus Fix
         setFocusable(true);
@@ -97,6 +107,17 @@ public class SearchPanel extends JPanel {
         add(firstSearchPanel);
         add(secondSearchPanel);
         add(Box.createVerticalStrut(100));
+    }
+
+    public void updateButtons(LoginManager loginManager) {
+        boolean loggedIn = loginManager.isLoggedIn();
+
+        loginButton.setVisible(!loggedIn);
+        signupButton.setVisible(!loggedIn);
+        profileButton.setVisible(loggedIn);
+
+        topButtonPanel.revalidate();
+        topButtonPanel.repaint();
     }
 
     public void addToHistory(Movie movie) {

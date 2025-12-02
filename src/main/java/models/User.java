@@ -1,6 +1,7 @@
 package models;
 
 import exceptions.MovieAlreadyFavoritedException;
+import exceptions.PasswordsNotEqualException;
 import exceptions.UserNotFoundException;
 import exceptions.UsernameTakenException;
 
@@ -34,8 +35,8 @@ public class User {
     - UserID ad
      */
 
-    private final String username;
-    private final String password;
+    private String username;
+    private String password;
     private final ArrayList<Movie> favorites;
     private static final Map<String, String> userPasswordMap = new HashMap<>();
     private static final Map<String, User> userMap = new HashMap<>();
@@ -67,6 +68,19 @@ public class User {
             throw new UserNotFoundException();
         }
         return userMap.containsKey(username);
+    }
+
+    public void changeUsername(String username){
+        this.username = username;
+    }
+
+    public void changePassword(String password1, String password2) throws PasswordsNotEqualException {
+        if (password1.equals(password2)){
+            userPasswordMap.put(this.username, password1);
+        }
+        else{
+            throw new PasswordsNotEqualException();
+        }
     }
 
     public static User getUser(String username){

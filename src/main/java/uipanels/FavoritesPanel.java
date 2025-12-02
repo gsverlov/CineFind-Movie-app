@@ -26,15 +26,13 @@ public class FavoritesPanel extends JPanel {
         favoritesList.setCellRenderer(new MovieCellRenderer());
 
         JScrollPane scrollPane = new JScrollPane(favoritesList);
-        add(scrollPane);
+
         scrollPane.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
         favoritesBackButton = new JButton("Back");
-        add(favoritesBackButton);
+
 
         favoritesList.setCellRenderer(new MovieCellRenderer());
-
-        add(new JLabel("Your Favorite Movies:"));
 
         favoritesList.addListSelectionListener(e -> {
             if (!e.getValueIsAdjusting()) {
@@ -47,6 +45,9 @@ public class FavoritesPanel extends JPanel {
                 favoritesList.clearSelection();
             }
         });
+        add(new JLabel("Your Favorite Movies:"));
+        add(scrollPane);
+        add(favoritesBackButton);
     }
 
     public List<Movie> getFavorites() {
