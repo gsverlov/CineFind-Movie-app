@@ -3,7 +3,7 @@ package uipanels;
 import javax.swing.*;
 import java.awt.*;
 import java.net.URL;
-
+import controllers.AddFavoriteInteractor;
 import controllers.LoginManager;
 import controllers.ViewMovieDetailsInteractor;
 import models.Movie;
@@ -101,6 +101,7 @@ public class MovieDetailsWindow extends JFrame {
 
     // [MODIFIED] 移除彈跳視窗，並觸發刷新通知
     private void toggleFavorite(LoginManager loginManager) {
+        User user = loginManager.getLoggedInUser();
         if (!loginManager.isLoggedIn()) {
             JOptionPane.showMessageDialog(null, "Please login first.");
             return;

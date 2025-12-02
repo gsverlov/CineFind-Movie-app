@@ -57,7 +57,7 @@ public class Main {
 
             // Panels
             LoginPanel loginPanel = new LoginPanel(loginManager);
-            SignupPanel signupPanel = new SignupPanel();
+            SignupPanel signupPanel = new SignupPanel(loginManager);
 
             SearchPanel searchPanel = new SearchPanel(loginManager);
             ResultsPanel resultsPanel = new ResultsPanel(loginManager);
@@ -165,8 +165,9 @@ public class Main {
             // --- Navigation Buttons ---
             loginPanel.backButton.addActionListener(e -> {
               loginPanel.clearFields(); //empty text field
-              cl.show(cardPanel, CARD_SEARCH));
-            })
+              cl.show(cardPanel, CARD_SEARCH);
+            });
+
             signupPanel.backButton.addActionListener(e -> {
                 signupPanel.clearFields(); // empty text field
                 cl.show(cardPanel, CARD_SEARCH);
@@ -206,13 +207,15 @@ public class Main {
             signupPanel.signUpButton.addActionListener(e ->{
                 String username = signupPanel.usernameBox.getText();
                 String password = signupPanel.passwordBox.getText();
-                loginManager.createAccount(username, password);
+                try {
+                    loginManager.createAccount(username, password);
+                } catch (UsernameTakenException ex) {
+                    throw new RuntimeException(ex);
+                }
 
                 try {
                     loginManager.login(username, password);
                     User user = loginManager.getLoggedInUser();
-                    String msg = "You are now Logged in as ";
-                    JOptionPane.showMessageDialog(null, msg + user.getUsername());
                 } catch (UserNotFoundException | WrongPasswordException ex) {
                     return;
                 }
@@ -228,8 +231,6 @@ public class Main {
                 try {
                     loginManager.login(username, password);
                     User user = loginManager.getLoggedInUser();
-                    String msg = "You are now Logged in as ";
-                    JOptionPane.showMessageDialog(null, msg + user.getUsername());
                 } catch (UserNotFoundException | WrongPasswordException ex) {
                     return;
                 }

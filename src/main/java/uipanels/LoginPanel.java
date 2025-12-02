@@ -13,8 +13,6 @@ public class LoginPanel extends JPanel {
     public final JTextField passwordBox;
 
     // 把這兩個變數變成類別成員
-    private JTextField usernameBox;
-    private JTextField passwordBox;
 
     public LoginPanel(LoginManager loginManager) {
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));

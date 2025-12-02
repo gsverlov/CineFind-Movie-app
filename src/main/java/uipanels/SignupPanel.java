@@ -8,10 +8,8 @@ import javax.swing.*;
 public class SignupPanel extends JPanel {
     public JButton signUpButton;
     public JButton backButton;
-
-    // 把這兩個變數變成類別成員，這樣才能在其他方法清空它們
-    private JTextField usernameBox;
-    private JTextField passwordBox;
+    public JTextField usernameBox;
+    public JTextField passwordBox;
 
     public SignupPanel(LoginManager loginManager) {
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
