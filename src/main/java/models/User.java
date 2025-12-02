@@ -111,9 +111,7 @@ public class User {
         }
     }
 
-    public void unfavoriteMovie(Movie movie){
-        this.favorites.remove(movie);
-    }
+    public void unfavoriteMovie(Movie movie) {this.favorites.remove(movie);}
 
     public List<Movie> getFavorites(){
         return new ArrayList<>(this.favorites);
@@ -126,7 +124,4 @@ public class User {
     public List<Movie> getSearchHistory() {
         return new ArrayList<>(this.searchHistory);
     }
-
-
-
 }

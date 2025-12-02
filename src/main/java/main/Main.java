@@ -180,8 +180,8 @@ public class Main {
             favoritesPanel.favoritesBackButton.addActionListener(e -> cl.show(container, CARD_SEARCH));
             advancedPanel.advancedBackButton.addActionListener(e -> cl.show(container, CARD_SEARCH));
             searchPanel.favoriteButton.addActionListener(e ->{
-                favoritesPanel.loadFavoritesIntoList();
                 favoritesPanel.buildUI(loginManager);
+                favoritesPanel.loadFavoritesIntoList();
                 cl.show(container, CARD_FAVORITES);
             });
             searchPanel.advancedButton.addActionListener(e -> cl.show(container, CARD_ADVANCED));
