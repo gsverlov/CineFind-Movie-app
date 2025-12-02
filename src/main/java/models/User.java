@@ -4,16 +4,10 @@ import exceptions.MovieAlreadyFavoritedException;
 import exceptions.PasswordsNotEqualException;
 import exceptions.UserNotFoundException;
 import exceptions.UsernameTakenException;
-
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.List;
-import org.json.JSONArray;
-import org.json.JSONObject;
 
 public class User {
     /* Represents an individual user for the program.
@@ -117,9 +111,7 @@ public class User {
         }
     }
 
-    public void unfavoriteMovie(Movie movie){
-        this.favorites.remove(movie);
-    }
+    public void unfavoriteMovie(Movie movie) {this.favorites.remove(movie);}
 
     public List<Movie> getFavorites(){
         return new ArrayList<>(this.favorites);
@@ -132,7 +124,4 @@ public class User {
     public List<Movie> getSearchHistory() {
         return new ArrayList<>(this.searchHistory);
     }
-
-
-
 }

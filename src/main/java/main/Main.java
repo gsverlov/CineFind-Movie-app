@@ -222,6 +222,7 @@ public class Main {
             advancedPanel.advancedBackButton.addActionListener(e -> cl.show(container, CARD_SEARCH));
 
             searchPanel.favoriteButton.addActionListener(e ->{
+                favoritesPanel.buildUI(loginManager);
                 favoritesPanel.loadFavoritesIntoList();
                 cl.show(container, CARD_FAVORITES);
             });
