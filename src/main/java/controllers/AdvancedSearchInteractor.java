@@ -9,11 +9,12 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 
+
 public class AdvancedSearchInteractor {
 
-    private EmbeddingGenerator embeddingGenerator;
-    private PineconeClient pineconeClient;
-    private OMDbApiClient omdbClient;
+    private final EmbeddingGenerator embeddingGenerator;
+    private final PineconeClient pineconeClient;
+    private final OMDbApiClient omdbClient;
 
     public AdvancedSearchInteractor() {
         // Initialize API clients with keys from config
@@ -58,13 +59,13 @@ public class AdvancedSearchInteractor {
                     String title = metadata.optString("title", "Unknown");
 
                     try {
-                        System.out.println("  → Fetching details for: " + title);
+                        System.out.println("Fetching details for: " + title);
 
                         // Search OMDB by title to get the movie
                         String searchResponse = omdbClient.searchMovies(title);
                         JSONObject searchJson = new JSONObject(searchResponse);
 
-                        if (searchJson.has("Search") && searchJson.getJSONArray("Search").length() > 0) {
+                        if (searchJson.has("Search") && !searchJson.getJSONArray("Search").isEmpty()) {
                             // Get the first result's imdbID
                             JSONObject firstResult = searchJson.getJSONArray("Search").getJSONObject(0);
                             String imdbID = firstResult.optString("imdbID");
@@ -91,19 +92,19 @@ public class AdvancedSearchInteractor {
                                     movie.rating = detailsJson.optString("imdbRating");
 
                                     movies.add(movie);
-                                    System.out.println("     ✓ " + movie.title + " (similarity: " +
+                                    System.out.println(movie.title + " (similarity: " +
                                             String.format("%.2f", match.score) + ")");
                                 }
                             }
                         } else {
-                            System.out.println("     ✗ Could not find on OMDB: " + title);
+                            System.out.println("Could not find on OMDB: " + title);
                         }
 
                         // Small delay to respect OMDB rate limits
                         Thread.sleep(200);
 
                     } catch (Exception e) {
-                        System.err.println("     ✗ Error fetching details for " + title + ": " + e.getMessage());
+                        System.err.println(" Error fetching details for " + title + ": " + e.getMessage());
                     }
                 }
             }
