@@ -1,0 +1,33 @@
+{"Michael": {
+  "favorites": [
+    {
+      "year": "2008",
+      "imbdID": "tt0489099",
+      "title": "Jumper",
+      "type": "movie",
+      "poster": "https://m.media-amazon.com/images/M/MV5BMWQ3NjA3NTYtNDJiYi00ZTE0LWFmNzMtZjc0NTUxNjk2YTFkXkEyXkFqcGc@._V1_SX300.jpg"
+    },
+    {
+      "year": "1999",
+      "imbdID": "tt0137523",
+      "title": "Fight Club",
+      "type": "movie",
+      "poster": "https://m.media-amazon.com/images/M/MV5BOTgyOGQ1NDItNGU3Ny00MjU3LTg2YWEtNmEyYjBiMjI1Y2M5XkEyXkFqcGc@._V1_SX300.jpg"
+    },
+    {
+      "year": "2008",
+      "imbdID": "tt0426592",
+      "title": "Superhero Movie",
+      "type": "movie",
+      "poster": "https://m.media-amazon.com/images/M/MV5BMTc0Njc1MTU5Nl5BMl5BanBnXkFtZTcwMjA4NDE2MQ@@._V1_SX300.jpg"
+    },
+    {
+      "year": "2012",
+      "imbdID": "tt1232829",
+      "title": "21 Jump Street",
+      "type": "movie",
+      "poster": "https://m.media-amazon.com/images/M/MV5BMTg2NjJiODctM2IyMS00MmQ5LWI1YmQtNTBjMTI4M2U2YzA5XkEyXkFqcGc@._V1_SX300.jpg"
+    }
+  ],
+  "password": "Michael'sPassword"
+}}

@@ -5,7 +5,6 @@ import java.awt.*;
 import java.net.URL;
 
 import controllers.LoginManager;
-import controllers.AddFavoriteInteractor;
 import controllers.ViewMovieDetailsInteractor;
 import models.Movie;
 import models.User;
@@ -48,8 +47,6 @@ public class MovieDetailsWindow extends JFrame {
         heartButton.setFocusPainted(false);
         heartButton.setContentAreaFilled(false);
         heartButton.setCursor(new Cursor(Cursor.HAND_CURSOR));
-
-        updateHeartState(loginManager);
 
         heartButton.addActionListener(e -> toggleFavorite(loginManager));
 
@@ -108,8 +105,6 @@ public class MovieDetailsWindow extends JFrame {
             JOptionPane.showMessageDialog(null, "Please login first.");
             return;
         }
-
-        User user = loginManager.getLoggedInUser();
         boolean isFav = user.getFavorites().contains(movie);
 
         if (!isFav) {
@@ -122,8 +117,6 @@ public class MovieDetailsWindow extends JFrame {
             user.unfavoriteMovie(movie);
             // 這裡也不再顯示 JOptionPane
         }
-
-        // 1. 更新按鈕狀態
         updateHeartState(loginManager);
 
         // 2. [重要] 通知外部 (FavoritesPanel) 刷新列表

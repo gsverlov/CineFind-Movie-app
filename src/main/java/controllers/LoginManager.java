@@ -7,6 +7,7 @@ import models.User;
 
 import java.util.Map;
 import java.util.logging.Logger;
+import uipanels.SearchPanel;
 
 public class LoginManager {
     private User loggedInUser;

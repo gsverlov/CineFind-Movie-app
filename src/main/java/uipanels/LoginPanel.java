@@ -7,8 +7,10 @@ import exceptions.WrongPasswordException;
 import javax.swing.*;
 
 public class LoginPanel extends JPanel {
-    public JButton loginButton;
-    public JButton backButton;
+    public final JButton loginButton;
+    public final JButton backButton;
+    public final JTextField usernameBox;
+    public final JTextField passwordBox;
 
     // 把這兩個變數變成類別成員
     private JTextField usernameBox;
