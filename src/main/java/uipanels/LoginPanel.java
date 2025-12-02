@@ -12,7 +12,6 @@ public class LoginPanel extends JPanel {
     public final JTextField usernameBox;
     public final JTextField passwordBox;
 
-    // 把這兩個變數變成類別成員
 
     public LoginPanel(LoginManager loginManager) {
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
@@ -35,7 +34,6 @@ public class LoginPanel extends JPanel {
         buttonPanel.add(loginButton);
         buttonPanel.add(backButton);
 
-        // --- [FIX] 修改後的監聽器 ---
         loginButton.addActionListener(e -> {
             String username = usernameBox.getText();
             String password = passwordBox.getText();
@@ -43,12 +41,10 @@ public class LoginPanel extends JPanel {
             try {
                 loginManager.loginInteractor(username, password);
 
-                // 成功：顯示訊息並清空欄位
+                // succes and empty text field
                 JOptionPane.showMessageDialog(this, "Login Successful!");
                 clearFields();
 
-                // 注意：這裡通常需要通知 Main.java 切換畫面
-                // 既然你的架構是在 Main 處理切換，使用者現在手動按 Back 即可看到登入後的狀態
 
             } catch (UserNotFoundException | WrongPasswordException ex) {
                 JOptionPane.showMessageDialog(null, ex.getMessage());
@@ -60,7 +56,6 @@ public class LoginPanel extends JPanel {
         add(buttonPanel);
     }
 
-    // [NEW] 新增這個方法
     public void clearFields() {
         usernameBox.setText("");
         passwordBox.setText("");

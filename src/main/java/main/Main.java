@@ -89,7 +89,7 @@ public class Main {
             frame.setVisible(true);
 
 
-            // --- Handle click on Search Result List ---
+            // Handle click on Search Result List
             resultsPanel.movieList.addListSelectionListener(e -> {
                 if (!e.getValueIsAdjusting()) {
                     Movie selected = resultsPanel.movieList.getSelectedValue();
@@ -113,7 +113,6 @@ public class Main {
                 if (item instanceof Movie) {
                     Movie historyMovie = (Movie) item;
 
-                    // --- 修正 4: 這裡也要更新為新的建構子 ---
                     ViewMovieDetailsInteractor interactor =
                             new ViewMovieDetailsInteractor(new OMDbApiClient(System.getenv("OMBD_API_KEY")));
                     new MovieDetailsWindow(historyMovie, interactor, loginManager, null);
