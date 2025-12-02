@@ -7,7 +7,7 @@
       <env name="SERPAPI_KEY" value="1e1a21d46ace2cda3876eb94b4d017fb53f5a9e2bae10d5b7292b75650872da6" />
       <env name="ZYTE_API_KEY" value="86bea890953d4d31b2cd45737ff0b03f" />
     </envs>
-    <option name="MAIN_CLASS_NAME" value="Main" />
+    <option name="MAIN_CLASS_NAME" value="main.Main" />
     <module name="TeamProject" />
     <method v="2">
       <option name="Make" enabled="true" />
