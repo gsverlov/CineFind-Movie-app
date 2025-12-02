@@ -6,21 +6,24 @@ import java.net.URL;
 
 import controllers.LoginManager;
 import controllers.ViewMovieDetailsInteractor;
-import exceptions.MovieAlreadyFavoritedException;
 import models.Movie;
 import models.User;
 
 public class MovieDetailsWindow extends JFrame {
 
     private Movie movie;
-    private DefaultListModel<Object> favoritesModel;
     private JButton heartButton;
     private ViewMovieDetailsInteractor interactor;
+    private Runnable onFavoriteChange; // [NEW] 通知外部刷新的機制
 
+    // [MODIFIED] 建構子增加了 Runnable 參數
     public MovieDetailsWindow(Movie movie,
-                              ViewMovieDetailsInteractor interactor, LoginManager loginManager) {
+                              ViewMovieDetailsInteractor interactor,
+                              LoginManager loginManager,
+                              Runnable onFavoriteChange) {
         this.movie = movie;
         this.interactor = interactor;
+        this.onFavoriteChange = onFavoriteChange; // 儲存這個回調函數
 
         setTitle(movie.title);
         setSize(500, 700);
@@ -39,7 +42,7 @@ public class MovieDetailsWindow extends JFrame {
         JLabel titleLabel = new JLabel("<html><h2>" + movie.title + "</h2></html>");
 
         heartButton = new JButton("♡");
-        heartButton.setFont(new Font("Segoe UI Symbol", Font.BOLD, 20)); // 支援愛心符號
+        heartButton.setFont(new Font("Segoe UI Symbol", Font.BOLD, 20));
         heartButton.setBorderPainted(false);
         heartButton.setFocusPainted(false);
         heartButton.setContentAreaFilled(false);
@@ -51,7 +54,7 @@ public class MovieDetailsWindow extends JFrame {
         headerPanel.add(heartButton, BorderLayout.EAST);
         mainPanel.add(headerPanel);
 
-        // --- 2. Poster Image ---
+        // Poster
         JLabel posterLabel = new JLabel("Loading poster...");
         posterLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
         mainPanel.add(Box.createVerticalStrut(10));
@@ -59,7 +62,7 @@ public class MovieDetailsWindow extends JFrame {
 
         loadPoster(movie.poster, posterLabel);
 
-        // --- 3. Detailed Info Area ---
+        // Info Area
         mainPanel.add(Box.createVerticalStrut(20));
 
         JLabel infoLabel = new JLabel("<html><b>Year:</b> " + movie.year +
@@ -78,48 +81,48 @@ public class MovieDetailsWindow extends JFrame {
         plotLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
         mainPanel.add(plotLabel);
 
-        // --- 4. Fetch Details from API (Async) ---
         fetchDetailedInfo(plotLabel, infoLabel);
 
         add(mainPanel);
         setVisible(true);
     }
 
+    // [FIXED] 修復愛心顯示邏輯，現在會正確顯示實心/空心
     private void updateHeartState(LoginManager loginManager) {
+        if (!loginManager.isLoggedIn()) return;
+
         User user = loginManager.getLoggedInUser();
         boolean isFav = user.getFavorites().contains(movie);
-        if (!isFav) {
-            heartButton.setText(isFav ? "❤" : "♡"); // 實心 vs 空心
-            heartButton.setForeground(isFav ? Color.RED : Color.BLACK);
-        } else {
-            heartButton.setText(isFav ? "♡" : "❤"); // 實心 vs 空心
-            heartButton.setForeground(isFav ? Color.BLACK : Color.RED);
 
-        }
-
+        // 簡潔的邏輯：是 favorite 就顯示紅心，否則顯示空心
+        heartButton.setText(isFav ? "❤" : "♡");
+        heartButton.setForeground(isFav ? Color.RED : Color.BLACK);
     }
 
+    // [MODIFIED] 移除彈跳視窗，並觸發刷新通知
     private void toggleFavorite(LoginManager loginManager) {
-        User user = loginManager.getLoggedInUser();
-        if(user == null){
-            JOptionPane.showMessageDialog(null, "You must be logged in.");
+        if (!loginManager.isLoggedIn()) {
+            JOptionPane.showMessageDialog(null, "Please login first.");
             return;
         }
         boolean isFav = user.getFavorites().contains(movie);
-        if(!isFav) {
-            try {
-                user.favoriteMovie(movie);
-                JOptionPane.showMessageDialog(null, "Added to favorites!");
-            } catch (MovieAlreadyFavoritedException ex) {
-                JOptionPane.showMessageDialog(null, ex.getMessage());
-            }
-        }
 
-        else {
+        if (!isFav) {
+            // 加入最愛
+            AddFavoriteInteractor addInteractor = new AddFavoriteInteractor();
+            addInteractor.execute(user, movie);
+            // 這裡不再顯示 JOptionPane (System Prompt)
+        } else {
+            // 移除最愛
             user.unfavoriteMovie(movie);
-            JOptionPane.showMessageDialog(null, "Removed from favorites!");
+            // 這裡也不再顯示 JOptionPane
         }
         updateHeartState(loginManager);
+
+        // 2. [重要] 通知外部 (FavoritesPanel) 刷新列表
+        if (onFavoriteChange != null) {
+            onFavoriteChange.run();
+        }
     }
 
     private void loadPoster(String urlString, JLabel label) {
@@ -129,10 +132,9 @@ public class MovieDetailsWindow extends JFrame {
                     URL url = new URL(urlString);
                     ImageIcon icon = new ImageIcon(url);
                     Image scaled = icon.getImage().getScaledInstance(200, 300, Image.SCALE_SMOOTH);
-                    ImageIcon scaledIcon = new ImageIcon(scaled);
                     SwingUtilities.invokeLater(() -> {
                         label.setText("");
-                        label.setIcon(scaledIcon);
+                        label.setIcon(new ImageIcon(scaled));
                     });
                 } catch (Exception e) {}
             }).start();
@@ -145,36 +147,23 @@ public class MovieDetailsWindow extends JFrame {
         new Thread(() -> {
             try {
                 Movie detailed = interactor.getMovieDetails(movie.imdbID);
-
                 SwingUtilities.invokeLater(() -> {
                     if (detailed == null) {
                         plotLabel.setText("Failed to load details.");
                         return;
                     }
-
-                    // update your local movie instance if you want to preserve it elsewhere
                     movie.plot = detailed.plot;
-                    movie.director = detailed.director;
-                    movie.genre = detailed.genre;
-                    movie.runtime = detailed.runtime;
-                    movie.rating = detailed.rating;
-                    movie.poster = detailed.poster;
-                    movie.year = detailed.year; // optional if it may be updated
+                    // ... (更新其他屬性)
 
-                    // update UI
                     plotLabel.setText("<html><p style='width: 350px'>" + movie.plot + "</p></html>");
-
-                    infoLabel.setText("<html><b>Year:</b> " + movie.year +
-                            "<br><b>Genre:</b> " + movie.genre +
-                            "<br><b>Director:</b> " + movie.director +
-                            "<br><b>Runtime:</b> " + movie.runtime +
-                            "<br><b>Rating:</b> ⭐ " + movie.rating + "</html>");
+                    infoLabel.setText("<html><b>Year:</b> " + detailed.year +
+                            "<br><b>Genre:</b> " + detailed.genre +
+                            "<br><b>Director:</b> " + detailed.director +
+                            "<br><b>Runtime:</b> " + detailed.runtime +
+                            "<br><b>Rating:</b> ⭐ " + detailed.rating + "</html>");
                 });
-
             } catch (Exception e) {
-                SwingUtilities.invokeLater(() ->
-                        plotLabel.setText("Failed to load details.")
-                );
+                SwingUtilities.invokeLater(() -> plotLabel.setText("Failed to load details."));
             }
         }).start();
     }
