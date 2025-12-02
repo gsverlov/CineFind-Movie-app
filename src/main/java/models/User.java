@@ -29,6 +29,7 @@ public class User {
     private ArrayList<Movie> favorites;
     private static Map<String, String> userPassowrdMap = new HashMap<>();
     private static Map<String, User> userMap = new HashMap<>();
+    private ArrayList<Movie> searchHistory;
 
     public User(String username, String password) throws UsernameTakenException {
         if (userPassowrdMap.containsKey(username)) {
@@ -40,6 +41,8 @@ public class User {
         this.favorites = new ArrayList<>();
         userMap.put(username, this);
         userPassowrdMap.put(username, password);
+        this.favorites = new ArrayList<>();
+        this.searchHistory = new ArrayList<>();
     }
 
     public String getUsername(){
@@ -78,4 +81,13 @@ public class User {
     public List<Movie> getFavorites(){
         return new ArrayList<>(this.favorites);
     }
+
+    public ArrayList<Movie> getSearchHistory() {
+        return new ArrayList<>(this.searchHistory);
+    }
+
+    public void setSearchHistory(ArrayList<Movie> history) {
+        this.searchHistory = history;
+    }
 }
+

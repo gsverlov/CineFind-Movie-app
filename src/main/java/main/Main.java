@@ -43,7 +43,7 @@ public class Main {
             LoginPanel loginPanel = new LoginPanel(loginManager);
             SignupPanel signupPanel = new SignupPanel(loginManager);
 
-            SearchPanel searchPanel = new SearchPanel();
+            SearchPanel searchPanel = new SearchPanel(loginManager);
             ResultsPanel resultsPanel = new ResultsPanel(loginManager);
 
             FavoritesPanel favoritesPanel = new FavoritesPanel(loginManager);

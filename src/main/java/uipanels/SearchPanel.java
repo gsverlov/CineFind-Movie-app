@@ -1,12 +1,16 @@
 package uipanels;
 
+import controllers.LoginManager; // 確保 import 這個
+import controllers.UpdateSearchHistoryInteractor; // 確保 import 這個
 import models.Movie;
+import models.User; // 確保 import 這個
 
 import javax.swing.*;
 import javax.swing.plaf.basic.BasicComboBoxUI;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.List;
 
 public class SearchPanel extends JPanel {
 
@@ -16,7 +20,13 @@ public class SearchPanel extends JPanel {
     public JButton loginButton;
     public JButton signupButton;
 
-    public SearchPanel() {
+    // [NEW] 我們需要 LoginManager 來知道是誰在搜尋
+    private final LoginManager loginManager;
+
+    // [MODIFIED] 建構子現在需要傳入 LoginManager
+    public SearchPanel(LoginManager loginManager) {
+        this.loginManager = loginManager; // 儲存起來
+
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 
         //upper Login and Signup buttons
@@ -49,9 +59,7 @@ public class SearchPanel extends JPanel {
         // Initialize ComboBox
         searchBox = new JComboBox<>();
         searchBox.setEditable(true);
-
         searchBox.setPreferredSize(new Dimension(500, 30));
-
         searchBox.setRenderer(new MovieCellRenderer());
 
         // Hide arrow
@@ -99,26 +107,32 @@ public class SearchPanel extends JPanel {
         add(Box.createVerticalStrut(100));
     }
 
+    // [MODIFIED] 這就是你要展示給 TA 看的 AFTER
     public void addToHistory(Movie movie) {
         if (movie == null) return;
 
-        DefaultComboBoxModel<Object> model = (DefaultComboBoxModel<Object>) searchBox.getModel();
-
-        for (int i = 0; i < model.getSize(); i++) {
-            Object item = model.getElementAt(i);
-            if (item instanceof Movie) {
-                Movie m = (Movie) item;
-                if (m.imdbID.equals(movie.imdbID)) {
-                    model.removeElementAt(i);
-                    break;
-                }
-            }
+        // 1. 檢查是否登入
+        if (!loginManager.isLoggedIn()) {
+            return; // 沒登入就不記歷史紀錄
         }
 
-        model.insertElementAt(movie, 0);
+        User currentUser = loginManager.getLoggedInUser();
 
-        if (model.getSize() > 5) {
-            model.removeElementAt(5);
+        // 2. 呼叫 Interactor (Clean Architecture!)
+        UpdateSearchHistoryInteractor interactor = new UpdateSearchHistoryInteractor();
+        List<Movie> updatedHistory = interactor.execute(currentUser, movie);
+
+        // 3. 更新 UI (View 職責)
+        updateSearchBoxUI(updatedHistory);
+    }
+
+    // [NEW] Helper method to update the UI specifically
+    private void updateSearchBoxUI(List<Movie> history) {
+        DefaultComboBoxModel<Object> model = (DefaultComboBoxModel<Object>) searchBox.getModel();
+        model.removeAllElements();
+
+        for (Movie m : history) {
+            model.addElement(m);
         }
     }
 }
