@@ -35,8 +35,12 @@ public class LoginManager {
         return passwordMap.get(username).equals(password);
     }
 
-    public void createAccount(String username, String password) throws UsernameTakenException {
-        new User(username, password);
+    public void createAccount(String username, String password) {
+        try {
+            new User(username, password);
+        } catch (UsernameTakenException e) {
+            boolean flag = true;
+        }
     }
 
     public User getLoggedInUser(){

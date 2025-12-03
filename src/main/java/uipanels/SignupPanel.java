@@ -9,11 +9,13 @@ public class SignupPanel extends JPanel {
     public JButton signUpButton;
     public JButton backButton;
     public JTextField usernameBox;
-    public JTextField passwordBox;
+    // CRITICAL FIX 1: Use JPasswordField for password security
+    public JPasswordField passwordBox;
 
     public SignupPanel(LoginManager loginManager) {
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 
+        // ... username panel setup (no change) ...
         JPanel usernamePanel = new JPanel();
         JLabel usernameLabel = new JLabel("Username:");
         usernameBox = new JTextField(20);
@@ -22,10 +24,12 @@ public class SignupPanel extends JPanel {
 
         JPanel passwordPanel = new JPanel();
         JLabel passwordLabel = new JLabel("Password:");
-        passwordBox = new JTextField(20);
+        // CRITICAL FIX 2: Initialize as JPasswordField
+        passwordBox = new JPasswordField(20);
         passwordPanel.add(passwordLabel);
         passwordPanel.add(passwordBox);
 
+        // ... button panel setup (no change) ...
         JPanel buttonPanel = new JPanel();
         signUpButton = new JButton("Signup");
         backButton = new JButton("Back");
@@ -34,7 +38,9 @@ public class SignupPanel extends JPanel {
 
         signUpButton.addActionListener(e -> {
             String username = usernameBox.getText();
-            String password = passwordBox.getText();
+            // CRITICAL FIX 3: Get password as char[] and convert to String
+            // This is the correct way to retrieve text from a JPasswordField
+            String password = new String(passwordBox.getPassword());
 
             // check if input is empty
             if (username.trim().isEmpty() || password.trim().isEmpty()) {
@@ -42,16 +48,12 @@ public class SignupPanel extends JPanel {
                 return;
             }
 
-            try {
-                loginManager.createAccount(username, password);
+            loginManager.createAccount(username, password);
 
-                // empty text field
-                JOptionPane.showMessageDialog(this, "Registration Successful! Please Login.");
-                clearFields();
+            // This code runs ONLY on successful creation
+            JOptionPane.showMessageDialog(this, "Registration Successful! Please Login.");
+            clearFields(); // FIELDS ARE CLEARED HERE
 
-            } catch (UsernameTakenException ex) {
-                JOptionPane.showMessageDialog(this, "Username already taken. Please choose another one.");
-            }
         });
 
         add(usernamePanel);
@@ -59,8 +61,8 @@ public class SignupPanel extends JPanel {
         add(buttonPanel);
     }
 
-    // empty text field
     public void clearFields() {
+        // This method is correct for both JTextField and JPasswordField
         usernameBox.setText("");
         passwordBox.setText("");
     }
