@@ -1,16 +1,10 @@
-{
-  "abc": {
-    "favorites": [{
-      "year": "1996",
-      "imbdID": "tt0117060",
-      "title": "Mission: Impossible",
-      "type": "movie",
-      "poster": "https://m.media-amazon.com/images/M/MV5BOGZjNDlkMTYtMTJkZi00OTkzLWI4NDEtYTA2ODQyMjcwYTdlXkEyXkFqcGc@._V1_SX300.jpg"
-    }],
-    "password": "abc"
-  },
-  "m": {
-    "favorites": [],
-    "password": "m"
-  }
-}
+{"adam": {
+  "favorites": [{
+    "year": "2011",
+    "imbdID": "tt1229238",
+    "title": "Mission: Impossible - Ghost Protocol",
+    "type": "movie",
+    "poster": "https://m.media-amazon.com/images/M/MV5BMTY4MTUxMjQ5OV5BMl5BanBnXkFtZTcwNTUyMzg5Ng@@._V1_SX300.jpg"
+  }],
+  "password": "adam"
+}}

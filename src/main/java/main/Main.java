@@ -270,12 +270,7 @@ public class Main {
             signupPanel.signUpButton.addActionListener(e ->{
                 String username = signupPanel.usernameBox.getText();
                 String password = signupPanel.passwordBox.getText();
-                try {
-                    loginManager.createAccount(username, password);
-                } catch (UsernameTakenException ex) {
-                    JOptionPane.showMessageDialog(frame, ex.getMessage());
-                    return;
-                }
+                loginManager.createAccount(username, password);
 
                 try {
                     loginManager.login(username, password);
