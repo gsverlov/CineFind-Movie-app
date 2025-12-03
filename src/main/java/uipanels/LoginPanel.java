@@ -54,7 +54,7 @@ public class LoginPanel extends JPanel {
             String password = passwordBox.getText();
 
             try {
-                loginManager.login(username, password);
+                loginManager.loginInteractor(username, password);
 
                 // succes and empty text field
                 JOptionPane.showMessageDialog(this, "Login Successful!");

@@ -222,6 +222,7 @@ public class Main {
             advancedPanel.advancedBackButton.addActionListener(e -> cl.show(container, CARD_SEARCH));
 
             searchPanel.favoriteButton.addActionListener(e ->{
+                favoritesPanel.buildUI(loginManager);
                 favoritesPanel.loadFavoritesIntoList();
                 cl.show(container, CARD_FAVORITES);
             });
@@ -273,7 +274,7 @@ public class Main {
                 loginManager.createAccount(username, password);
 
                 try {
-                    loginManager.login(username, password);
+                    loginManager.loginInteractor(username, password);
                     JOptionPane.showMessageDialog(frame, "Account created and logged in!");
                 } catch (UserNotFoundException | WrongPasswordException ex) {
                     JOptionPane.showMessageDialog(frame, ex.getMessage());
@@ -288,7 +289,7 @@ public class Main {
                 String password = loginPanel.passwordBox.getText();
 
                 try {
-                    loginManager.login(username, password);
+                    loginManager.loginInteractor(username, password);
                     JOptionPane.showMessageDialog(frame, "Welcome back, " + username + "!");
                 } catch (UserNotFoundException | WrongPasswordException ex) {
                     JOptionPane.showMessageDialog(frame, "Invalid username or password.");
