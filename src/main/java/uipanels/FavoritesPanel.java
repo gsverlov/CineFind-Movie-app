@@ -17,43 +17,21 @@ public class FavoritesPanel extends JPanel {
     private final JList<Movie> favoritesList;
     public final JButton favoritesBackButton;
 
+    private final JScrollPane scrollPane;
+
     public FavoritesPanel(LoginManager loginManager) {
 
         this.loginManager = loginManager;
-
-        String titleText = "Your Favorite Movies:";
-
-        if (loginManager.isLoggedIn()) {
-            User user = loginManager.getLoggedInUser();
-            String username = user.getUsername();
-
-            char last = username.charAt(username.length() - 1);
-
-            if (last == 's' || last == 'S') {
-                titleText = username + "' favorite movies";
-            } else {
-                titleText = username + "'s favorite movies";
-            }
-        }
-
-        JLabel title = new JLabel(titleText);
-        add(title);  // <-- THIS is required
-
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
-
         setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
 
         favoritesList = new JList<>();
         favoritesList.setCellRenderer(new MovieCellRenderer());
 
-        JScrollPane scrollPane = new JScrollPane(favoritesList);
-
+        scrollPane = new JScrollPane(favoritesList);
         scrollPane.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
         favoritesBackButton = new JButton("Back");
-
-
-        favoritesList.setCellRenderer(new MovieCellRenderer());
 
         favoritesList.addListSelectionListener(e -> {
             if (!e.getValueIsAdjusting()) {
@@ -69,9 +47,8 @@ public class FavoritesPanel extends JPanel {
                 favoritesList.clearSelection();
             }
         });
-        add(title);
-        add(scrollPane);
-        add(favoritesBackButton);
+
+        buildUI(loginManager);
     }
 
     public List<Movie> getFavorites() {
@@ -90,22 +67,19 @@ public class FavoritesPanel extends JPanel {
         }
         favoritesList.setModel(model);
 
-        // force refresh UI so it appears updated
         favoritesList.revalidate();
         favoritesList.repaint();
     }
 
     public void buildUI(LoginManager loginManager) {
-        removeAll();  // Clears old UI
+        removeAll();
 
         JLabel title;
-
         if (loginManager.isLoggedIn()) {
             User user = loginManager.getLoggedInUser();
             String username = user.getUsername();
             char last = username.charAt(username.length() - 1);
 
-            // English grammar for possessive
             if (last == 's' || last == 'S') {
                 title = new JLabel(username + "' favorite movies");
             } else {
@@ -116,8 +90,11 @@ public class FavoritesPanel extends JPanel {
         }
 
         add(title);
+        add(Box.createVerticalStrut(10));
+        add(scrollPane);
+        add(Box.createVerticalStrut(10));
+        add(favoritesBackButton);
 
-        // Reload the actual favorite movies list
         loadFavoritesIntoList();
 
         revalidate();
